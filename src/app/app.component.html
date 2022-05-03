@@ -1,0 +1,211 @@
+
+<mat-toolbar class="mat-elevation-z6" color="primary">
+
+  <button
+    *ngIf="!loginPage && authService.isUserLogged()"
+    mat-icon-button class="app-menu-button"
+    (click)="goToHome()"
+  >
+    <mat-icon
+      class="material-icons"
+      [style.color]="'white'"
+      matTooltip="{{ 'gotoHome' | translate | titlecase }}">home</mat-icon>
+  </button>
+
+  <button
+    *ngIf="!loginPage && authService.isUserLogged()"
+    mat-button class="app-menu-button"
+    (click)="sidenav.toggle()"
+  >
+    <i class="material-icons" [style.color]="'white'">menu</i>
+  </button>
+
+  <span [style.color]="'white'">NG Fintech
+    <span [style.color]="'white'" *ngIf="!(isHandset$ | async) && title">
+      <mat-icon role="img" [style.vertical-align]="'text-bottom'">arrow_forward_ios</mat-icon>
+      {{ title | translate | uppercase }}
+    </span>
+  </span>
+
+  <span class="flex-space"></span>
+
+  <button mat-button class="mat-button " [matMenuTriggerFor]="userMenu" *ngIf="!loginPage && authService.isUserLogged()">
+
+    <mat-icon class="material-icons" [style.color]="'#fff'">person</mat-icon>
+    <!--
+    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isAdmin">engineering</mat-icon>
+    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isPowerUser">person_add_alt_1</mat-icon>
+    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isUser">person</mat-icon>
+    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isReporting">how_to_reg</mat-icon>
+    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isGuest">person_outline</mat-icon>
+    -->
+
+    <span [style.color]="'#fff'">{{ authService.userName }}</span>
+
+    <mat-menu #userMenu="matMenu" xPosition="after">
+      <a mat-menu-item routerLink="settings">
+        <mat-icon class="material-icons">settings</mat-icon>
+        <span>{{'settings' | translate | titlecase}}</span>
+      </a>
+      <a mat-menu-item (click)="changePassword()">
+        <mat-icon class="material-icons">vpn_key</mat-icon>
+        <span>{{'changePassword' | translate | titlecase}}</span>
+      </a>
+      <a mat-menu-item routerLink='login' (click)="authService.logOut()" >
+        <mat-icon class="material-icons">exit_to_app</mat-icon>
+        <span>{{'logout' | translate | titlecase}}</span>
+      </a>
+    </mat-menu>
+
+  </button>
+
+  <button mat-button class="mat-button " style="width:100px;" [matMenuTriggerFor]="menu">
+    <span class="mat-button-wrapper" [style.color]="'#fff'">
+      <mat-icon style="position: absolute; top: 7px;left: 12px" role="img" svgicon="flag" aria-hidden="true" *ngIf="language && language == 'en-US'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <mask id="z">
+            <circle cx="256" cy="256" r="256" fill="#fff"/>
+          </mask>
+          <g mask="url(#z)">
+            <path fill="#eee" d="M0 256L256 0h256v55.7l-20.7 34.5 20.7 32.2v66.8l-21.2 32.7L512 256v66.8l-24 31.7 24 35.1v66.7l-259.1 28.3L0 456.3v-66.7l27.1-33.3L0 322.8z"/>
+            <path fill="#d80027" d="M256 256h256v-66.8H236.9zm-19.1-133.6H512V55.7H236.9zM512 512v-55.7H0V512zM0 389.6h512v-66.8H0z"/>
+            <path fill="#0052b4" d="M0 0h256v256H0z"/>
+            <path fill="#eee" d="M15 14.5L6.9 40H-20L1.7 55.8l-8.3 25.5L15 65.5l21.6 15.8-8.2-25.4L50.2 40H23.4zm91.8 0L98.5 40H71.7l21.7 15.8-8.3 25.5 21.7-15.8 21.7 15.8-8.3-25.4L142 40h-26.8zm91.9 0l-8.3 25.6h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16H207zM15 89.2l-8.3 25.5H-20l21.7 15.8-8.3 25.5L15 140l21.6 15.7-8.2-25.3 21.7-16H23.4zm91.8 0l-8.3 25.5H71.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16h-26.8zm91.8 0l-8.3 25.5h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16H207zM15 163.6l-8.3 25.5H-20L1.6 205l-8.3 25.5L15 214.6l21.7 15.8-8.3-25.4 21.7-15.9H23.3zm91.8 0l-8.3 25.5H71.7L93.4 205l-8.3 25.5 21.7-15.8 21.7 15.8-8.3-25.4 21.7-15.9h-26.8zm91.8 0l-8.3 25.5h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.7 15.8L212 205l21.7-15.9H207z"/>
+          </g>
+        </svg>
+      </mat-icon>
+      <mat-icon style="position: absolute; top: 7px;left: 12px" role="img" svgicon="flag" aria-hidden="true" *ngIf="language && language == 'it-IT'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+          <mask id="z">
+            <circle cx="256" cy="256" r="256" fill="#fff"/>
+          </mask>
+          <g mask="url(#z)">
+            <path fill="#eee" d="M167 0h178l25.9 252.3L345 512H167l-29.8-253.4z"/>
+            <path fill="#6da544" d="M0 0h167v512H0z"/>
+            <path fill="#d80027" d="M345 0h167v512H345z"/>
+          </g>
+        </svg>
+      </mat-icon>
+      {{ language!.substring(0, 2).toUpperCase() }}
+      <mat-icon role="img" style="position: absolute; top: 7px;right: 12px; color: white">
+        arrow_drop_down
+      </mat-icon>
+      <mat-menu #menu="matMenu" xPosition="after">
+        <a mat-menu-item (click)="useLanguage('en-US')">
+          <mat-icon
+            role="img"
+            svgicon="flag"
+            aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <mask id="z">
+                <circle cx="256" cy="256" r="256" fill="#fff"/>
+              </mask>
+              <g mask="url(#z)">
+                <path fill="#eee" d="M0 256L256 0h256v55.7l-20.7 34.5 20.7 32.2v66.8l-21.2 32.7L512 256v66.8l-24 31.7 24 35.1v66.7l-259.1 28.3L0 456.3v-66.7l27.1-33.3L0 322.8z"/>
+                <path fill="#d80027" d="M256 256h256v-66.8H236.9zm-19.1-133.6H512V55.7H236.9zM512 512v-55.7H0V512zM0 389.6h512v-66.8H0z"/>
+                <path fill="#0052b4" d="M0 0h256v256H0z"/>
+                <path fill="#eee" d="M15 14.5L6.9 40H-20L1.7 55.8l-8.3 25.5L15 65.5l21.6 15.8-8.2-25.4L50.2 40H23.4zm91.8 0L98.5 40H71.7l21.7 15.8-8.3 25.5 21.7-15.8 21.7 15.8-8.3-25.4L142 40h-26.8zm91.9 0l-8.3 25.6h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16H207zM15 89.2l-8.3 25.5H-20l21.7 15.8-8.3 25.5L15 140l21.6 15.7-8.2-25.3 21.7-16H23.4zm91.8 0l-8.3 25.5H71.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16h-26.8zm91.8 0l-8.3 25.5h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.6 15.7-8.2-25.3 21.7-16H207zM15 163.6l-8.3 25.5H-20L1.6 205l-8.3 25.5L15 214.6l21.7 15.8-8.3-25.4 21.7-15.9H23.3zm91.8 0l-8.3 25.5H71.7L93.4 205l-8.3 25.5 21.7-15.8 21.7 15.8-8.3-25.4 21.7-15.9h-26.8zm91.8 0l-8.3 25.5h-26.8l21.7 15.8-8.3 25.5 21.7-15.8 21.7 15.8L212 205l21.7-15.9H207z"/>
+              </g>
+            </svg>
+          </mat-icon>
+          <span>EN</span>
+        </a>
+        <a mat-menu-item (click)="useLanguage('it-IT')">
+          <mat-icon
+            role="img"
+            svgicon="flag"
+            aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+              <mask id="z">
+                <circle cx="256" cy="256" r="256" fill="#fff"/>
+              </mask>
+              <g mask="url(#z)">
+                <path fill="#eee" d="M167 0h178l25.9 252.3L345 512H167l-29.8-253.4z"/>
+                <path fill="#6da544" d="M0 0h167v512H0z"/>
+                <path fill="#d80027" d="M345 0h167v512H345z"/>
+              </g>
+            </svg>
+          </mat-icon>
+          <span>IT</span>
+        </a>
+      </mat-menu>
+    </span>
+  </button>
+
+  <ng-themes-menu [options]="themes$ | async" (themeChange)="useTheme($event)"></ng-themes-menu>
+
+</mat-toolbar>
+
+<mat-toolbar
+  *ngIf="authService.isUserLogged() && (isHandset$ | async) && title"
+  class="mat-elevation-z0" style="width: 100%"
+  color="primary"
+>
+  <span [style.color]="'white'">
+    <mat-icon role="img" [style.vertical-align]="'text-bottom'">arrow_forward_ios</mat-icon>
+    {{ title | translate }}
+  </span>
+</mat-toolbar>
+
+<br>
+
+<mat-sidenav-container autosize [ngClass]="{'hiddenContent': loginPage}">
+  <mat-sidenav #sidenav
+               [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+               [mode]="(isHandset$ | async) ? 'over' : 'side'"
+               [opened]="(isHandset$ | async) === false && !loginPage && authService.isUserLogged()">
+      <div class="menu">
+        <mat-nav-list>
+          <mat-list-item routerLink="card" routerLinkActive="menu-active">
+            <mat-icon matListIcon class="menu-icon">credit_card</mat-icon>
+            <a matLine>{{ 'card.menu' | translate }}</a>
+          </mat-list-item>
+          <mat-list-item routerLink="movement" routerLinkActive="menu-active">
+            <mat-icon matListIcon class="menu-icon">receipt_long</mat-icon>
+            <a matLine>{{ 'movement.menu' | translate }}</a>
+          </mat-list-item>
+          <mat-list-item routerLink="transfer" routerLinkActive="menu-active">
+            <mat-icon matListIcon class="menu-icon">paid</mat-icon>
+            <a matLine>{{ 'transfer.menu' | translate }}</a>
+          </mat-list-item>
+          <mat-list-item routerLink="appointment" routerLinkActive="menu-active">
+            <mat-icon matListIcon class="menu-icon">event</mat-icon>
+            <a matLine>{{ 'appointment.menu' | translate }}</a>
+          </mat-list-item>
+          <mat-list-item routerLink="tax" routerLinkActive="menu-active">
+            <mat-icon matListIcon class="menu-icon">summarize</mat-icon>
+            <a matLine>{{ 'tax.menu' | translate }}</a>
+          </mat-list-item>
+        </mat-nav-list>
+      </div>
+      <div class="menu footer">
+        <div class="footer-title">
+          NG Fintech - 1.0.0
+        </div>
+        <div>
+          <table style="width: 50%; height: 50px; margin: 0 auto">
+            <tr>
+              <td style="text-align: right;" rowspan="2">
+                <a slot="start" href="https://academy.talent-factory.it/" target="_blank">
+                  <img [src]="'assets/images/logo_' + themeService.getCurrentTheme().type + '.png'" height="35px" alt="Angular Academy">
+                </a>
+              </td>
+              <td style="text-align: left; vertical-align: bottom;">
+                <span>Angular Academy</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span style="text-align: center; vertical-align: top">
+                  IT TALENT FACTORY
+                </span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+  </mat-sidenav>
+  <mat-card class="mat-elevation-z0">
+    <router-outlet></router-outlet>
+  </mat-card>
+</mat-sidenav-container>

@@ -1,0 +1,71 @@
+{
+
+  "formatDate": "d/M/y",
+  "currency": "€",
+
+  "gotoHome": "Pagina iniziale",
+  "welcome": "{{user}}, benvenuto in NG Fintech",
+  "settings": "Parametri",
+  "logout": "Disconnetti",
+  "changePassword": "Cambio password",
+
+  "cancel": "Annulla",
+  "expandAll": "Espandi tutto",
+  "collapseAll": "Comprimi tutto",
+
+  "themes": {
+    "changeTheme": "Cambia tema",
+    "light": "Chiaro",
+    "dark": "Scuro"
+  },
+
+  "login": {
+    "login": "Login",
+    "register": "Nuovo account",
+    "loginLink": "Crea nuovo account",
+    "registerLink": "Gia' registrato ? Accedi",
+    "username": "Utente",
+    "password": "Password",
+    "repeatPassword": "Ripeti password",
+    "email": "e-mail",
+    "name": "Nome",
+    "surname": "Cognome",
+    "usernameRequired": "L'utente e' obbligatorio",
+    "passwordRequired": "La password e' obbligatoria",
+    "passwordNotCorresponding": "Le password non corrispondono",
+    "emailRequired": "L'indirizzo e-mail e' obbligatorio",
+    "emailInvalid": "Specificare un indirizzo e-mail valido",
+    "nameRequired": "Il nome e' obbligatorio",
+    "surnameRequired": "Il cognome e' obbligatorio",
+    "loginError": "Credenziali errate",
+    "userRegistered": "L'utente {{user}} e' stato registrato correttamente"
+  },
+
+  "card": {
+    "menu": "Carte",
+    "movementsTT": "Vedi movimenti",
+    "removeTT": "Rimuovi carta",
+    "add": "Aggiungi carta",
+    "name": "Nome",
+    "surname": "Cognome",
+    "type": "Tipo di carta",
+    "number": "N. di carta",
+    "securityCode": "Codice di sicurezza",
+    "cardRegistered": "La nuova carta e' stata aggiunta correttamente",
+    "cardTypeRequired": "Il tipo di carta e' obbligatorio",
+    "nameRequired": "Il nome e' obbligatorio",
+    "surnameRequired": "Il cognome e' obbligatorio",
+    "numberRequired": "Il numero di carta e' obbligatorio",
+    "numberValidRequired": "Numero di carta non valido",
+    "securityCodeRequired": "Il codice di sicurezza e' obbligatorio",
+    "securityCodeValidRequired": "Codice di sicurezza non valido"
+  },
+
+  "movement": {
+    "menu": "Movimenti",
+    "card": "Carta",
+    "chooseCard": "Seleziona carta",
+    "loadNext": "Carica altro"
+  }
+
+}

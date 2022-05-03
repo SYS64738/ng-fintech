@@ -1,0 +1,49 @@
+/* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: var(--bodycolor);
+}
+
+.bg-img {
+  background-image: url('assets/images/wallpaper.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: 100% 100%;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-space {
+  flex: 1 1 auto;
+}
+
+.sb-success {
+  background: #d4f3e6 !important;
+  border-color: #00b04f !important;
+  color: black !important;
+}
+
+.sb-warning {
+  background: #fffecf !important;
+  border-color: gold !important;
+  color: black !important;
+}
+
+.sb-info {
+  background: #d3f2ff !important;
+  border: 1px solid #0192d0 !important;
+  color: black !important;
+}
+
+.sb-error {
+  background: #fdded8 !important;
+  border-color: #b12a0b !important;
+  color: #b12a0b !important;
+}

@@ -1,0 +1,36 @@
+
+mat-toolbar {
+  width: 100%;
+  height: 64px;
+}
+
+.menu {
+  width: 300px;
+}
+
+.menu-icon {
+  margin-left: 5px;
+}
+
+.footer {
+  font-size: x-small;
+  position: fixed;
+  bottom: 0;
+  width: 300px;
+}
+
+.footer-title {
+  border-bottom: 1px solid var(--bordercolor);
+  text-align: center;
+  vertical-align: center;
+  width: 100%;
+  height: 16px;
+}
+
+.hiddenContent {
+  height: 0;
+}
+
+.menu-active {
+  background-color: var(--accentcolor);
+}
