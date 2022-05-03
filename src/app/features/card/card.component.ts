@@ -76,7 +76,7 @@ export class CardComponent {
   }
 
   addCardConfirm(cardForm: CardForm) {
-    // TODO: se non l'ho gia'..
+    // TODO: se non l'ho gia'...
     this.cards = [...this.cards, {
       _id: (this.cards.length + 1).toString(),
       number: cardForm.number,
