@@ -9,6 +9,8 @@
   "logout": "Disconnetti",
   "changePassword": "Cambio password",
 
+  "warning": "Attenzione",
+  "confirm": "OK",
   "cancel": "Annulla",
   "expandAll": "Espandi tutto",
   "collapseAll": "Comprimi tutto",
@@ -51,14 +53,17 @@
     "type": "Tipo di carta",
     "number": "N. di carta",
     "securityCode": "Codice di sicurezza",
-    "cardRegistered": "La nuova carta e' stata aggiunta correttamente",
+    "cardRegistered": "La nuova carta {{value}} e' stata aggiunta correttamente",
     "cardTypeRequired": "Il tipo di carta e' obbligatorio",
     "nameRequired": "Il nome e' obbligatorio",
     "surnameRequired": "Il cognome e' obbligatorio",
     "numberRequired": "Il numero di carta e' obbligatorio",
     "numberValidRequired": "Numero di carta non valido",
     "securityCodeRequired": "Il codice di sicurezza e' obbligatorio",
-    "securityCodeValidRequired": "Codice di sicurezza non valido"
+    "securityCodeValidRequired": "Codice di sicurezza non valido",
+    "alreadyExists": "La carta {{value}} esiste gia'",
+    "cardDeleteConfirm": "Confermi la cancellazione della carta: {{value}} ?",
+    "cardDeleted": "La carta {{value}} e' stata rimossa correttamente"
   },
 
   "movement": {

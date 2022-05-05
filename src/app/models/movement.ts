@@ -10,3 +10,8 @@ export interface Movement {
   cardId: string;
   timestamp: number;
 }
+
+export interface MovementList {
+  total: number,
+  data: Movement[]
+}

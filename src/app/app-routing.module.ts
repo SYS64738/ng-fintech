@@ -16,6 +16,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/movement/movement.module').then(m => m.MovementModule),
     canActivate: [AuthGuardService]
   },
+  { path: 'movement/:cardId',
+    loadChildren: () => import('./features/movement/movement.module').then(m => m.MovementModule),
+    canActivate: [AuthGuardService]
+  },
   { path: 'login',
     loadChildren: () => import('./features/login/login.module').then(m => m.LoginModule)
   },

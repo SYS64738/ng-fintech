@@ -1,9 +1,15 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {Card, CardForm} from "../../models/card";
 import {MatSidenav} from "@angular/material/sidenav";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {CardFormComponent} from "./card-form.component";
+import {CardService} from "../../api/card.service";
+import {MaskPipe} from "ngx-mask";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog.component";
+import {filter} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'ng-card',
@@ -13,14 +19,16 @@ import {CardFormComponent} from "./card-form.component";
       <mat-sidenav-container autosize style="height: 100%">
         <mat-sidenav #sidenav mode="side" opened="false" position="end">
           <ng-cardform
-            (add)="addCardConfirm($event)"
+            (add)="insertCard($event)"
             (cancel)="cleanUp()"
           ></ng-cardform>
         </mat-sidenav>
         <div [ngClass]="{'background': sidenav.opened}">
           <ng-cardlist
             [cards]="cards"
-            (add)="addCard()"
+            (add)="showCardForm()"
+            (delete)="deleteCard($event)"
+            (goToMovements)="goToMovements($event)"
           ></ng-cardlist>
         </div>
       </mat-sidenav-container>
@@ -39,59 +47,102 @@ import {CardFormComponent} from "./card-form.component";
 
   `]
 })
-export class CardComponent {
+export class CardComponent implements OnInit {
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(CardFormComponent) cardForm!: CardFormComponent;
 
-  cards: Card[] = [
-    {
-      _id: '1',
-      number: '1234123412341234',
-      type: 'mastercard',
-      ownerId: 'rch',
-      owner: 'Roberto Chionna',
-      amount: 1200
-    },
-    {
-      _id: '2',
-      number: '1234123412341234',
-      type: 'visa',
-      ownerId: 'dzo',
-      owner: 'Donatella Zotti',
-      amount: 1100
+  cards: Card[] = [];
+
+  constructor(private cardService: CardService,
+              private snackBar: MatSnackBar,
+              private translate: TranslateService,
+              private maskPipe: MaskPipe,
+              private dialog: MatDialog,
+              private router: Router) {}
+
+  ngOnInit() {
+    this.getCards();
+  }
+
+  getCards() {
+    this.cardService.list()
+      .subscribe(cards => {
+        this.cards = cards;
+      });
+  }
+
+  insertCard(cardForm: CardForm) {
+    // controllo se non l'ho gia'...
+    if (this.cards.findIndex(card => card.number === cardForm.number) !== -1) {
+      // conferma utente...
+      this.snackBar.open(
+        this.translate.instant('card.alreadyExists',
+          {value: this.maskPipe.transform(cardForm.number, '0000 0000 0000 0000')}),
+        undefined,
+        {duration: 3000, panelClass: ['sb-warning']}
+      );
+    } else {
+      this.cardService.insert(cardForm)
+        .subscribe(card => {
+          // aggiungo allo store...
+          this.cards = [...this.cards, card];
+          // conferma utente...
+          this.snackBar.open(
+            this.translate.instant('card.cardRegistered',
+              {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
+            undefined,
+            {duration: 3000, panelClass: ['sb-success']}
+          );
+          // pulizia...
+          this.cleanUp();
+        });
     }
-  ];
+  }
 
-  constructor(private snackBar: MatSnackBar,
-              private translate: TranslateService) {}
+  deleteCard(card: Card) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '620px',
+      data: {
+        title: this.translate.instant('warning'),
+        message: this.translate.instant('card.cardDeleteConfirm',
+          {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')})
+      }
+    });
+    dialogRef.afterClosed()
+      .pipe(
+        filter(dialogResult => dialogResult)
+      )
+      .subscribe(() => {
+        this.cardService.delete(card._id)
+          .pipe(
+            filter(result => result)
+          )
+          .subscribe(() => {
+            // rimuovo dallo store...
+            this.cards = this.cards.filter(c => c._id !== card._id);
+            // conferma utente...
+            this.snackBar.open(
+              this.translate.instant('card.cardDeleted',
+                {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
+              undefined,
+              {duration: 3000, panelClass: ['sb-success']}
+            );
+          })
+      });
+  }
 
-  addCard() {
+  goToMovements(card: Card) {
+    this.router.navigateByUrl(`/movement/${card._id}`);
+  }
+
+  showCardForm() {
     this.sidenav.open();
   }
 
   cleanUp() {
     this.cardForm.cleanUp();
     this.sidenav.close()
-  }
-
-  addCardConfirm(cardForm: CardForm) {
-    // TODO: se non l'ho gia'...
-    this.cards = [...this.cards, {
-      _id: (this.cards.length + 1).toString(),
-      number: cardForm.number,
-      ownerId: cardForm.surname,
-      owner: cardForm.surname + ' ' + cardForm.name,
-      type: cardForm.type,
-      amount: 0
-    }];
-    console.log(cardForm);
-    this.snackBar.open(
-      this.translate.instant('card.cardRegistered'),
-      undefined,
-      {duration: 3000, panelClass: ['sb-success']}
-    );
-    this.cleanUp();
   }
 
 }

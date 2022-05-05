@@ -8,6 +8,7 @@ import {NgxMaskModule} from "ngx-mask";
 import {MovementListItemComponent} from "./movement-list-item.component";
 import {MaterialModule} from "../../shared/material/material.module";
 import {SharedModule} from "../../shared/shared.module";
+import {FormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import {SharedModule} from "../../shared/shared.module";
     MovementRoutingModule,
     TranslateModule.forChild(),
     NgxMaskModule,
-    SharedModule
+    SharedModule,
+    FormsModule
   ]
 })
 export class MovementModule { }

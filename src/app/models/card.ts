@@ -15,5 +15,5 @@ export interface CardForm {
   name: string,
   surname: string,
   number: string,
-  securityCode: string,
+  csc: string,
 }

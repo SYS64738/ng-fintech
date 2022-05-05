@@ -9,6 +9,8 @@
   "logout": "Logout",
   "changePassword": "Change password",
 
+  "warning": "Warning",
+  "confirm": "OK",
   "cancel": "Cancel",
   "expandAll": "Expand all",
   "collapseAll": "Collapse all",
@@ -51,14 +53,17 @@
     "type": "Card type",
     "number": "Card #",
     "securityCode": "Security code",
-    "cardRegistered": "New card has been registered",
+    "cardRegistered": "Card {{value}} has been successfully registered",
     "cardTypeRequired": "Card type required",
     "nameRequired": "Name required",
     "surnameRequired": "Surname required",
     "numberRequired": "Card number required",
     "numberValidRequired": "Invalid card number",
     "securityCodeRequired": "Security code required",
-    "securityCodeValidRequired": "Invalid security code"
+    "securityCodeValidRequired": "Invalid security code",
+    "alreadyExists": "Card {{value}} already exists",
+    "cardDeleteConfirm": "Are you sure to remove card: {{value}} ?",
+    "cardDeleted": "Card {{value}} has been successfully deleted"
   },
 
   "movement": {

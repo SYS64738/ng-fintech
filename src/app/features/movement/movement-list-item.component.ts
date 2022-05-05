@@ -7,7 +7,7 @@ import {TranslateService} from "@ngx-translate/core";
   template: `
     <mat-expansion-panel>
       <mat-expansion-panel-header>
-        <mat-panel-title>
+        <mat-panel-description>
           <h6>[{{referenceDate}}]</h6>
           <h5
             class="amount"
@@ -16,7 +16,7 @@ import {TranslateService} from "@ngx-translate/core";
             {{ 'currency' | translate}} {{ amount | customCurrency : translate.currentLang }}
           </h5>
           <h5>{{ title }}</h5>
-        </mat-panel-title>
+        </mat-panel-description>
         <mat-panel-description *ngIf="description">
           {{ description | abbreviate: 20 }}
         </mat-panel-description>
@@ -36,7 +36,6 @@ import {TranslateService} from "@ngx-translate/core";
 
     h5 {
       margin-right: 10px;
-      min-width: 150px;
     }
 
     .amount {
@@ -55,6 +54,11 @@ import {TranslateService} from "@ngx-translate/core";
 
     mat-expansion-panel {
       margin-bottom: 10px;
+    }
+
+    .mat-expansion-panel-header-description {
+      align-items: center;
+      max-width: 50%;
     }
 
   `]

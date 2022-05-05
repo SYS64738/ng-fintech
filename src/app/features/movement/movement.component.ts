@@ -1,28 +1,38 @@
-import {Component, OnInit, ViewChild, } from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
 import {MatAccordion} from "@angular/material/expansion";
 import {Movement} from "../../models/movement";
+import {CardService} from "../../api/card.service";
+import {Card} from "../../models/card";
+import {filter} from "rxjs";
+import {environment} from "../../../environments/environment";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'ng-movement',
   template: `
     <div resizable>
 
-      <mat-form-field class="mat-input-1_3" appearance="fill">
-        <mat-label>{{ 'movement.chooseCard' | translate }}</mat-label>
-        <mat-select>
-          <mat-option
-            *ngFor="let card of ['card 1', 'card 2']"
-            [value]="card"
+      <div class="header">
+        <mat-form-field class="mat-input-1_3" appearance="fill">
+          <mat-label>{{ 'movement.chooseCard' | translate }}</mat-label>
+          <mat-select
+            [ngModel]="activeCardId"
           >
-            card
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+            <mat-option
+              *ngFor="let card of cards"
+              [value]="card._id"
+              (click)="cardChange(card._id)"
+            >
+              {{ card.number | mask: '0000 0000 0000 0000' }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <h3 *ngIf="movements.length > 0">{{ 'movement.menu' | translate }}: {{ movements.length }} / {{ totalMovements }}</h3>
+      </div>
 
       <mat-accordion
         [multi]="true"
         displayMode="flat"
-        #accordion="matAccordion"
       >
         <ng-movementlistitem *ngFor="let movement of movements"
           [referenceDate]="movement.timestamp | date: 'dd/MM/yyyy'"
@@ -34,8 +44,10 @@ import {Movement} from "../../models/movement";
       </mat-accordion>
 
       <button
+        *ngIf="movements.length > 0 && movements.length < totalMovements"
         mat-stroked-button
         class="button-other"
+        (click)="getNextMovements()"
       >
         {{ 'movement.loadNext' | translate }}
       </button>
@@ -48,6 +60,12 @@ import {Movement} from "../../models/movement";
     </div>
   `,
   styles: [`
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-left: 15px;
+    }
 
     .fab-toggle-accordion {
       position: fixed;
@@ -65,6 +83,7 @@ import {Movement} from "../../models/movement";
 
     .button-other {
       width: 100%;
+      margin-bottom: 10px;
     }
 
   `]
@@ -72,32 +91,62 @@ import {Movement} from "../../models/movement";
 export class MovementComponent implements OnInit {
 
   accordionOpen = false;
-  @ViewChild('accordion') accordion!: MatAccordion;
+  @ViewChild(MatAccordion) accordion!: MatAccordion;
 
-  movements: Movement[] = [
-    {
-      _id: '1',
-      type: 'out',
-      amount: 60,
-      title: 'Supermarket',
-      description: 'Spesa Esselunga',
-      cardId: '1',
-      timestamp: new Date().getTime()
-    },
-    {
-      _id: '2',
-      type: 'in',
-      amount: 1500,
-      title: 'Mercatino',
-      description: 'Vendita chitarra',
-      cardId: '1',
-      timestamp: new Date().getTime()
+  cards: Card[] = [];
+  activeCardId: string | null = null;
+  movements: Movement[] = [];
+  totalMovements: number = 0;
+  currentOffset: number = 0;
+
+  constructor(private cardService: CardService,
+              private activatedRouted: ActivatedRoute) {
+    if (activatedRouted.snapshot.params.hasOwnProperty('cardId')) {
+      this.activeCardId = activatedRouted.snapshot.params['cardId'];
+      this.cardChange(this.activeCardId!);
     }
-  ];
-
-  constructor() { }
+  }
 
   ngOnInit(): void {
+    this.getCards();
+  }
+
+  getCards(): void {
+    this.cardService.list()
+      .subscribe(cards => {
+        this.cards = cards;
+      });
+  }
+
+  cardChange(cardId: string): void {
+    console.log('cardChange', cardId);
+    // riazzero l'ambiente...
+    this.movements = [];
+    this.totalMovements = 0;
+    this.currentOffset = 0;
+    // la carta diventa quella attiva...
+    this.activeCardId = cardId;
+    // estraggo i movimenti della carta...
+    this.getMovements();
+  }
+
+  getNextMovements() {
+    // incremento l'offset...
+    this.currentOffset += environment.movementLimit;
+    // estraggo i prossimi movimenti...
+    this.getMovements();
+  }
+
+  getMovements() {
+    this.cardService.listMovements(this.activeCardId!, environment.movementLimit, this.currentOffset)
+      .pipe(
+        filter(result => result.data && result.data.length > 0)
+      )
+      .subscribe(result => {
+        // salvo comunque il totale...
+        this.totalMovements = result.total;
+        this.movements = [...this.movements, ...result.data];
+      });
   }
 
   toggleAll() {

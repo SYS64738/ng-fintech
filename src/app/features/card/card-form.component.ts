@@ -83,7 +83,7 @@ import {NgForm} from "@angular/forms";
           <input
             matInput
             autocomplete="off"
-            ngModel name="securityCode"
+            ngModel name="csc"
             #securityCodeRef="ngModel"
             placeholder="{{ 'card.securityCode' | translate }}"
             required

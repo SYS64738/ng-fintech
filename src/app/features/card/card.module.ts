@@ -9,7 +9,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {CardComponent} from "./card.component";
 import {CardFormComponent} from "./card-form.component";
 import {FormsModule} from "@angular/forms";
-import {NgxMaskModule} from "ngx-mask";
+import {MaskPipe, NgxMaskModule} from "ngx-mask";
 
 @NgModule({
   declarations: [
@@ -26,6 +26,9 @@ import {NgxMaskModule} from "ngx-mask";
     SharedModule,
     TranslateModule.forChild(),
     NgxMaskModule
+  ],
+  providers: [
+    MaskPipe
   ]
 })
 export class CardModule { }

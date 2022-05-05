@@ -1,4 +1,8 @@
 
+mat-sidenav-container {
+  background-color: var(--bodycolor);
+}
+
 mat-toolbar {
   width: 100%;
   height: 64px;
