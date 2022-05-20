@@ -71,15 +71,9 @@ export class AppComponent implements OnInit {
 
   goToHome = () => this.router.navigateByUrl('homepage');
 
-  changePassword() {
-    // this.dialog.open(ChangePasswordDialogComponent, {width: '332px', position: {top: '100px'}});
-  }
+  setTitle = (url: string) => this.title = `${url.substring(1)}.menu`;
 
-  setTitle(url: string) {
-    if (url.includes('/card')) {
-      this.title = 'card.menu';
-    }
-  }
+  useTheme = (theme: string) => this.themeService.setTheme(theme);
 
   useLanguage(language: string) {
     this.language = language;
@@ -87,6 +81,8 @@ export class AppComponent implements OnInit {
     this.dateAdapter.setLocale(this.language);
   }
 
-  useTheme = (theme: string) => this.themeService.setTheme(theme);
+  changePassword() {
+    // this.dialog.open(ChangePasswordDialogComponent, {width: '332px', position: {top: '100px'}});
+  }
 
 }

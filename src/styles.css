@@ -24,6 +24,10 @@ body {
   flex: 1 1 auto;
 }
 
+.uppercase{
+  text-transform: uppercase;
+}
+
 .sb-success {
   background: #d4f3e6 !important;
   border-color: #00b04f !important;

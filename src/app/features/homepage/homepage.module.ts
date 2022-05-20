@@ -1,11 +1,13 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { HomepageRoutingModule } from './homepage-routing.module';
 import { HomepageComponent } from './homepage.component';
 import {TranslateModule} from "@ngx-translate/core";
 import {SharedModule} from "../../shared/shared.module";
+import {RouterModule, Routes} from "@angular/router";
 
+const routes: Routes = [
+  { path: '', component: HomepageComponent }
+];
 
 @NgModule({
   declarations: [
@@ -13,7 +15,7 @@ import {SharedModule} from "../../shared/shared.module";
   ],
   imports: [
     CommonModule,
-    HomepageRoutingModule,
+    RouterModule.forChild(routes),
     TranslateModule.forChild(),
     SharedModule
   ]

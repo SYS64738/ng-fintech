@@ -20,6 +20,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/movement/movement.module').then(m => m.MovementModule),
     canActivate: [AuthGuardService]
   },
+  { path: 'transfer',
+    loadChildren: () => import('./features/transfer/transfer.module').then(m => m.TransferModule),
+    canActivate: [AuthGuardService]
+  },
   { path: 'login',
     loadChildren: () => import('./features/login/login.module').then(m => m.LoginModule)
   },

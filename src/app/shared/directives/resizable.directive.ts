@@ -1,11 +1,11 @@
-import {Directive, HostBinding, HostListener, OnInit} from '@angular/core';
+import {Directive, HostBinding, HostListener, Input, OnInit} from '@angular/core';
 
 @Directive({
   selector: '[resizable]'
 })
 export class ResizableDirective implements OnInit {
 
-  offset = 115;
+  @Input() offset: number = 115;
 
   @HostBinding('style.height.px') height: number | undefined;
   @HostBinding('style.margin') margin: string = 'auto';

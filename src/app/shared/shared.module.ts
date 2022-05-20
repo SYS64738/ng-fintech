@@ -12,7 +12,7 @@ import {TranslateModule} from "@ngx-translate/core";
     ResizableDirective,
     AbbreviatePipe,
     CustomCurrencyPipe,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
   ],
   imports: [
     CommonModule,

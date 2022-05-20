@@ -22,6 +22,7 @@
   },
 
   "login": {
+    "menu": "Login",
     "login": "Login",
     "register": "Nuovo account",
     "loginLink": "Crea nuovo account",
@@ -41,6 +42,10 @@
     "surnameRequired": "Il cognome e' obbligatorio",
     "loginError": "Credenziali errate",
     "userRegistered": "L'utente {{user}} e' stato registrato correttamente"
+  },
+
+  "homepage": {
+    "menu": "Pagina iniziale"
   },
 
   "card": {
@@ -71,6 +76,34 @@
     "card": "Carta",
     "chooseCard": "Seleziona carta",
     "loadNext": "Carica altro"
+  },
+
+  "transfer": {
+    "menu": "Trasferisci",
+    "name": "Nome",
+    "surname": "Cognome",
+    "iban": "IBAN",
+    "card": "Carta",
+    "chooseCard": "Seleziona carta",
+    "amount": "Importo",
+    "contacts": "Lista contatti",
+    "transfer": "Trasferisci denaro",
+    "nameRequired": "Il nome e' obbligatorio",
+    "surnameRequired": "Il cognome e' obbligatorio",
+    "ibanRequired": "L'IBAN e' obbligatorio",
+    "amountRequired": "L'importo e' obbligatorio",
+    "cardRequired": "La carta e' obbligatoria",
+    "transferDone": "Trasferimento effettuato correttamente",
+    "contact": {
+      "search": "Cerca contatto",
+      "new": "Nuovo contatto",
+      "contacts": "Contatti",
+      "selectTT": "Seleziona contatto",
+      "editTT": "Modifica contatto",
+      "removeTT": "Rimuovi contatto",
+      "back": "Indietro",
+      "save": "Salva"
+    }
   }
 
 }

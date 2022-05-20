@@ -1,11 +1,12 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild,} from '@angular/core';
+import {Component, OnInit, ViewChild,} from '@angular/core';
 import {MatAccordion} from "@angular/material/expansion";
 import {Movement} from "../../models/movement";
 import {CardService} from "../../api/card.service";
 import {Card} from "../../models/card";
-import {filter} from "rxjs";
+import {BehaviorSubject, combineLatest, filter} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'ng-movement',
@@ -16,10 +17,10 @@ import {ActivatedRoute, Router} from "@angular/router";
         <mat-form-field class="mat-input-1_3" appearance="fill">
           <mat-label>{{ 'movement.chooseCard' | translate }}</mat-label>
           <mat-select
-            [ngModel]="activeCardId"
+            [ngModel]="selectedCardId$ | async"
           >
             <mat-option
-              *ngFor="let card of cards"
+              *ngFor="let card of (cards$ | async)"
               [value]="card._id"
               (click)="cardChange(card._id)"
             >
@@ -93,7 +94,13 @@ export class MovementComponent implements OnInit {
   accordionOpen = false;
   @ViewChild(MatAccordion) accordion!: MatAccordion;
 
-  cards: Card[] = [];
+  cards$ = new BehaviorSubject<Card[]>([]);
+  selectedCardId$ = new BehaviorSubject<string>('');
+  selectedCard$ = combineLatest([this.cards$, this.selectedCardId$])
+    .pipe(
+      map(([cards, cardId]) => cards.find(c => c._id === cardId))
+    )
+
   activeCardId: string | null = null;
   movements: Movement[] = [];
   totalMovements: number = 0;
@@ -102,6 +109,7 @@ export class MovementComponent implements OnInit {
   constructor(private cardService: CardService,
               private activatedRouted: ActivatedRoute) {
     if (activatedRouted.snapshot.params.hasOwnProperty('cardId')) {
+      this.selectedCardId$.next(activatedRouted.snapshot.params['cardId']);
       this.activeCardId = activatedRouted.snapshot.params['cardId'];
       this.cardChange(this.activeCardId!);
     }
@@ -114,7 +122,7 @@ export class MovementComponent implements OnInit {
   getCards(): void {
     this.cardService.list()
       .subscribe(cards => {
-        this.cards = cards;
+        this.cards$.next(cards);
       });
   }
 

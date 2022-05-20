@@ -22,6 +22,7 @@
   },
 
   "login": {
+    "menu": "Login",
     "login": "Login",
     "register": "New account",
     "loginLink": "Create new account",
@@ -41,6 +42,10 @@
     "surnameRequired": "Surname required",
     "loginError": "Wrong credentials",
     "userRegistered": "User {{user}} has been registered"
+  },
+
+  "homepage": {
+    "menu": "Start"
   },
 
   "card": {
@@ -71,6 +76,34 @@
     "card": "Card",
     "chooseCard": "Choose card",
     "loadNext": "Load next"
+  },
+
+  "transfer": {
+    "menu": "Transfer",
+    "name": "Name",
+    "surname": "Surname",
+    "iban": "IBAN",
+    "card": "Card",
+    "chooseCard": "Choose card",
+    "amount": "Amount",
+    "contacts": "Recipients",
+    "transfer": "Transfer money",
+    "nameRequired": "Name required",
+    "surnameRequired": "Surname required",
+    "ibanRequired": "IBAN required",
+    "amountRequired": "Amount required",
+    "cardRequired": "Card required",
+    "transferDone": "Transfer completed successfully",
+    "contact": {
+      "search": "Search recipient",
+      "new": "New recipient",
+      "contacts": "Recipients",
+      "selectTT": "Select recipient",
+      "editTT": "Edit recipient",
+      "removeTT": "Erase recipient",
+      "back": "Back",
+      "save": "Save"
+    }
   }
 
 }
