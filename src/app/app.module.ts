@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {ErrorHandler, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,6 +10,7 @@ import {HttpClient, HttpClientModule} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {CoreModule} from "./core/core.module";
 import {NgxMaskModule} from "ngx-mask";
+import {CommonErrorHandler} from "./shared/common-error-handler";
 
 @NgModule({
   declarations: [
@@ -31,6 +32,12 @@ import {NgxMaskModule} from "ngx-mask";
       }
     }),
     NgxMaskModule.forRoot(),
+  ],
+  providers: [
+    {
+      provide: ErrorHandler,
+      useClass: CommonErrorHandler
+    }
   ],
   bootstrap: [AppComponent]
 })

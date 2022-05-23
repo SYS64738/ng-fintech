@@ -9,21 +9,8 @@ import {AuthService} from "../../core/auth/auth.service";
     </div>
   `
 })
-export class HomepageComponent implements OnInit {
-
-  heightPate: number | null = null;
-  offset = 115;
+export class HomepageComponent {
 
   constructor(public authService: AuthService) { }
-
-  ngOnInit(): void {
-    this.heightPate = window.innerHeight - this.offset;
-    console.log('init', this.heightPate);
-  }
-
-  onResize(event: any) {
-    this.heightPate = event.target.innerHeight - this.offset;
-    console.log('resize', this.heightPate);
-  }
 
 }
