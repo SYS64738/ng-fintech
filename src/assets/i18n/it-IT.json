@@ -41,7 +41,9 @@
     "nameRequired": "Il nome e' obbligatorio",
     "surnameRequired": "Il cognome e' obbligatorio",
     "loginError": "Credenziali errate",
-    "userRegistered": "L'utente {{user}} e' stato registrato correttamente"
+    "userRegistered": "L'utente {{user}} e' stato registrato correttamente",
+    "failed": "Credenziali non valide",
+    "registrationFailed": "Fallita registrazione nuovo utente: {{error}}"
   },
 
   "homepage": {
@@ -104,6 +106,14 @@
       "back": "Indietro",
       "save": "Salva"
     }
+  },
+
+  "appointment": {
+    "menu": "Appuntamenti",
+    "chooseDate": "Seleziona una data",
+    "slotsAvailable": "Orari disponibili",
+    "confirmTitle": "Confermi l'appuntamento ?",
+    "confirmMessage": "L'appuntamento sara' fissato per il giorno {{day}} alle {{time}}"
   }
 
 }

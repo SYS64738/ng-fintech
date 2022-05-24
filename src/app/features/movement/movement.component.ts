@@ -116,7 +116,6 @@ export class MovementComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    throw new Error('minchia');
     this.getCards();
   }
 

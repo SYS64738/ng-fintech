@@ -6,7 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {FormsModule} from "@angular/forms";
 import {MaterialModule} from "./shared/material/material.module";
 import {TranslateLoader, TranslateModule} from "@ngx-translate/core";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClient, HttpClientModule, HttpClientXsrfModule} from "@angular/common/http";
 import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {CoreModule} from "./core/core.module";
 import {NgxMaskModule} from "ngx-mask";
@@ -23,6 +23,10 @@ import {CommonErrorHandler} from "./shared/common-error-handler";
     CoreModule,
     FormsModule,
     HttpClientModule,
+    HttpClientXsrfModule.withOptions({
+      cookieName: 'XSRF-TOKEN',
+      headerName: 'X-XSRF-TOKEN',
+    }),
     MaterialModule,
     TranslateModule.forRoot({
       loader: {

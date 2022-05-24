@@ -1,12 +1,14 @@
 import {
+  AfterViewInit,
   Component,
-  OnInit,
+  OnInit, ViewChild,
 } from '@angular/core';
-import {AuthService} from "../../core/auth/auth.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Credentials, User} from "../../models/user";
 import {TranslateService} from "@ngx-translate/core";
+import {AuthService} from "../../core/auth.service";
+import {SignInComponent} from "./signin.component";
 
 @Component({
   selector: 'ng-login',
@@ -19,7 +21,7 @@ import {TranslateService} from "@ngx-translate/core";
         {{ 'login.' + mode | translate | titlecase }}
       </mat-card-title>
 
-      <ng-signin *ngIf="mode === 'login'" (login)="login($event)"></ng-signin>
+      <ng-signin *ngIf="mode === 'login'" (login)="login($event)" #signIn></ng-signin>
       <ng-register *ngIf="mode === 'register'" (register)="register($event)"></ng-register>
 
       <a href="#" (click)="toggleMode($event)">{{ 'login.' + mode + 'Link' | translate }}</a>
@@ -60,6 +62,8 @@ import {TranslateService} from "@ngx-translate/core";
 })
 export class LoginComponent implements OnInit {
 
+  @ViewChild(SignInComponent) signIn: SignInComponent | null = null;
+
   mode: 'login' | 'register' = 'login';
 
   constructor(private authService: AuthService,
@@ -81,22 +85,38 @@ export class LoginComponent implements OnInit {
 
   login(credential: Credentials) {
     // console.log(credential);
-    this.authService.logIn(credential.email, credential.password)
-      .subscribe((userId) => {
-        console.log(`User ${userId} has logged in`);
-        this.router.navigateByUrl('homepage');
+    this.authService.login(credential.email, credential.password)
+      .subscribe((result) => {
+        console.log(result);
+        if (result) {
+          console.log(`User ${credential.email} has logged in`);
+          window.document.body.classList.remove('bg-img');
+          this.router.navigateByUrl('homepage');
+        } else {
+          this.snackBar.open(
+            this.translate.instant('login.failed'),
+            undefined,
+            {duration: 3000, panelClass: ['sb-error']}
+          );
+          this.signIn!.cleanUp();
+        }
       })
   }
 
-  register(registration: User) {
+  register(credentials: Credentials) {
     // console.log(registration);
-    this.snackBar.open(
-      this.translate.instant('login.userRegistered', {user: registration.name}),
-      undefined,
-      {duration: 3000, panelClass: ['sb-success']}
-    );
-    // torno al login...
-    this.mode = 'login';
+    this.authService.register(credentials)
+      .subscribe((result) => {
+        if (result) {
+          this.snackBar.open(
+            this.translate.instant('login.userRegistered', {user: credentials.name}),
+            undefined,
+            {duration: 3000, panelClass: ['sb-success']}
+          );
+          // torno al login...
+          this.mode = 'login';
+        }
+      })
   }
 
 }

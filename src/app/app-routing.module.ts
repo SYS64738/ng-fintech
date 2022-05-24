@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {AuthGuard} from "./core/auth/auth.guard";
+import {AuthGuard} from "./core/guards/auth.guard";
 
 const routes: Routes = [
   {
@@ -22,6 +22,10 @@ const routes: Routes = [
   },
   { path: 'transfer',
     loadChildren: () => import('./features/transfer/transfer.module').then(m => m.TransferModule),
+    canActivate: [AuthGuard]
+  },
+  { path: 'appointment',
+    loadChildren: () => import('./features/appointment/appointment.module').then(m => m.AppointmentModule),
     canActivate: [AuthGuard]
   },
   { path: 'login',

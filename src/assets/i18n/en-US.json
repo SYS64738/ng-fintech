@@ -41,7 +41,9 @@
     "nameRequired": "Name required",
     "surnameRequired": "Surname required",
     "loginError": "Wrong credentials",
-    "userRegistered": "User {{user}} has been registered"
+    "userRegistered": "User {{user}} has been registered",
+    "failed": "Invalid credentials",
+    "registrationFailed": "New account creation failed: {{error}}"
   },
 
   "homepage": {
@@ -104,6 +106,14 @@
       "back": "Back",
       "save": "Save"
     }
+  },
+
+  "appointment": {
+    "menu": "Appointments",
+    "chooseDate": "Choose a date",
+    "slotsAvailable": "Available slots",
+    "confirmTitle": "Confirm appointment ?",
+    "confirmMessage": "The appointment would be scheduled on {{day}} at {{time}}"
   }
 
 }

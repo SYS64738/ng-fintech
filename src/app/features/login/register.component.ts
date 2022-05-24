@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Output} from "@angular/core";
-import {User} from "../../models/user";
+import {Credentials, User} from "../../models/user";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 
-type Registration = User & {repeatPassword: string}
+type Registration = Credentials & {repeatPassword: string}
 
 @Component({
   selector: 'ng-register',
@@ -118,7 +118,7 @@ type Registration = User & {repeatPassword: string}
         mat-raised-button type="submit"
         color="primary"
         [disabled]="!f.valid">
-        {{ 'register' | translate }}
+        {{ 'confirm' | translate }}
       </button>
 
     </form>
@@ -149,7 +149,7 @@ type Registration = User & {repeatPassword: string}
 })
 export class RegisterComponent {
 
-  @Output() register = new EventEmitter<User>();
+  @Output() register = new EventEmitter<Credentials>();
 
   showPassword: boolean = false;
 

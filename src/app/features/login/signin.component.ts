@@ -1,5 +1,6 @@
-import {Component, EventEmitter, Output} from "@angular/core";
+import {Component, EventEmitter, Output, ViewChild} from "@angular/core";
 import {Credentials} from "../../models/user";
+import {FormGroupDirective, NgForm} from "@angular/forms";
 
 @Component({
   selector: 'ng-signin',
@@ -88,8 +89,14 @@ import {Credentials} from "../../models/user";
 })
 export class SignInComponent {
 
+  @ViewChild('f') form!: NgForm;
+
   @Output() login = new EventEmitter<Credentials>();
 
   showPassword: boolean = false;
+
+  cleanUp() {
+    this.form.resetForm();
+  }
 
 }

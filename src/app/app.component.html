@@ -2,7 +2,7 @@
 <mat-toolbar class="mat-elevation-z6" color="primary">
 
   <button
-    *ngIf="!loginPage && authService.isUserLogged()"
+    *ngIf="!loginPage && (userStore.user$ | async)"
     mat-icon-button class="app-menu-button"
     (click)="goToHome()"
   >
@@ -13,7 +13,7 @@
   </button>
 
   <button
-    *ngIf="!loginPage && authService.isUserLogged()"
+    *ngIf="!loginPage && (userStore.user$ | async)"
     mat-button class="app-menu-button"
     (click)="sidenav.toggle()"
   >
@@ -29,20 +29,14 @@
 
   <span class="flex-space"></span>
 
-  <button mat-button class="mat-button " [matMenuTriggerFor]="userMenu" *ngIf="!loginPage && authService.isUserLogged()">
+  <button mat-button class="mat-button " [matMenuTriggerFor]="userMenu" *ngIf="!loginPage && (userStore.user$ | async)">
 
     <mat-icon class="material-icons" [style.color]="'#fff'">person</mat-icon>
-    <!--
-    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isAdmin">engineering</mat-icon>
-    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isPowerUser">person_add_alt_1</mat-icon>
-    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isUser">person</mat-icon>
-    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isReporting">how_to_reg</mat-icon>
-    <mat-icon class="material-icons" [matTooltip]="auth.userRole" [style.color]="'#fff'" *ngIf="auth.isGuest">person_outline</mat-icon>
-    -->
 
-    <span [style.color]="'#fff'">{{ authService.userName }}</span>
+    <span [style.color]="'#fff'">{{ (userStore.user$ | async)?.displayName }}</span>
 
     <mat-menu #userMenu="matMenu" xPosition="after">
+      <!--
       <a mat-menu-item routerLink="settings">
         <mat-icon class="material-icons">settings</mat-icon>
         <span>{{'settings' | translate | titlecase}}</span>
@@ -51,7 +45,8 @@
         <mat-icon class="material-icons">vpn_key</mat-icon>
         <span>{{'changePassword' | translate | titlecase}}</span>
       </a>
-      <a mat-menu-item routerLink='login' (click)="authService.logOut()" >
+      -->
+      <a mat-menu-item routerLink='login' (click)="authService.logout()" >
         <mat-icon class="material-icons">exit_to_app</mat-icon>
         <span>{{'logout' | translate | titlecase}}</span>
       </a>
@@ -137,7 +132,7 @@
 </mat-toolbar>
 
 <mat-toolbar
-  *ngIf="authService.isUserLogged() && (isHandset$ | async) && title"
+  *ngIf="(userStore.user$ | async) && (isHandset$ | async) && title"
   class="mat-elevation-z0" style="width: 100%"
   color="primary"
 >
@@ -153,7 +148,7 @@
   <mat-sidenav #sidenav
                [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
                [mode]="(isHandset$ | async) ? 'over' : 'side'"
-               [opened]="(isHandset$ | async) === false && !loginPage && authService.isUserLogged()">
+               [opened]="(isHandset$ | async) === false && !loginPage && (userStore.user$ | async) !== null">
       <div class="menu">
         <mat-nav-list>
           <mat-list-item routerLink="card" routerLinkActive="menu-active">
