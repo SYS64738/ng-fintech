@@ -54,6 +54,7 @@
             ],
             "styles": [
               "./src/assets/themes/teal-orange.css",
+              "./node_modules/leaflet/dist/leaflet.css",
               "src/styles.css"
             ],
             "scripts": []

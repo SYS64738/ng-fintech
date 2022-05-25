@@ -87,7 +87,7 @@ export class LoginComponent implements OnInit {
     // console.log(credential);
     this.authService.login(credential.email, credential.password)
       .subscribe((result) => {
-        console.log(result);
+        // console.log(result);
         if (result) {
           console.log(`User ${credential.email} has logged in`);
           window.document.body.classList.remove('bg-img');

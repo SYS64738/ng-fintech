@@ -8,6 +8,7 @@ import {DayWithSlot, DayWithSlots} from "../../models/appointment";
   template: `
 
     <div class="container">
+
       <form #f="ngForm">
 
         <mat-form-field class="mat-input-large" appearance="fill">

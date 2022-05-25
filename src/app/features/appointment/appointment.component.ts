@@ -16,6 +16,14 @@ import {filter} from "rxjs";
 
       <mat-sidenav-container autosize style="height: 100%">
         <mat-sidenav #sidenav mode="side" opened="false" position="end">
+          <div *ngIf="selectedLocation"
+               class="container"
+          >
+            <ng-leaflet
+              [location]="selectedLocation.name"
+              [coords]="selectedLocation.coords"
+            ></ng-leaflet>
+          </div>
           <ng-appointmentform
             [slots]="locationSlots"
             (select)="confirmAppointment($event)"
@@ -38,6 +46,12 @@ import {filter} from "rxjs";
       width: 60%;
     }
 
+    .container {
+      width: 95%;
+      margin-left: 20px;
+      margin-bottom: 20px;
+    }
+
   `]
 })
 export class AppointmentComponent implements OnInit {
@@ -47,6 +61,7 @@ export class AppointmentComponent implements OnInit {
 
   locations: Location[] = [];
   locationSlots: DayWithSlots[] = [];
+  selectedLocation: Location | null = null;
 
   constructor(private appointmentService: AppointmentService,
               private snackBar: MatSnackBar,
@@ -72,7 +87,8 @@ export class AppointmentComponent implements OnInit {
   }
 
   newAppointment(location: Location) {
-    this.getLocationSlot(location._id);
+    this.selectedLocation = location;
+    this.getLocationSlot(this.selectedLocation._id);
     this.appointmentForm.cleanUp();
     this.sidenav.open();
   }
@@ -91,24 +107,18 @@ export class AppointmentComponent implements OnInit {
         filter(dialogResult => dialogResult)
       )
       .subscribe(() => {
-        console.log('...confirmed...');
-        /*
-        this.cardService.delete(card._id)
+        this.appointmentService.schedule(dayWithSlot)
           .pipe(
             filter(result => result)
           )
           .subscribe(() => {
-            // rimuovo dallo store...
-            this.cards = this.cards.filter(c => c._id !== card._id);
             // conferma utente...
             this.snackBar.open(
-              this.translate.instant('card.cardDeleted',
-                {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
+              this.translate.instant('appointment.confirmed'),
               undefined,
               {duration: 3000, panelClass: ['sb-success']}
             );
           })
-        */
       });
   }
 

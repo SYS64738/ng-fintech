@@ -6,6 +6,7 @@ import {AbbreviatePipe} from "./pipes/abbreviate.pipe";
 import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import {MaterialModule} from "./material/material.module";
 import {TranslateModule} from "@ngx-translate/core";
+import {LeafletComponent} from "./components/leaflet.component";
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import {TranslateModule} from "@ngx-translate/core";
     AbbreviatePipe,
     CustomCurrencyPipe,
     ConfirmDialogComponent,
+    LeafletComponent
   ],
   imports: [
     CommonModule,
@@ -23,7 +25,8 @@ import {TranslateModule} from "@ngx-translate/core";
     ResizableDirective,
     AbbreviatePipe,
     CustomCurrencyPipe,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    LeafletComponent
   ]
 })
 export class SharedModule { }

@@ -113,7 +113,9 @@
     "chooseDate": "Seleziona una data",
     "slotsAvailable": "Orari disponibili",
     "confirmTitle": "Confermi l'appuntamento ?",
-    "confirmMessage": "L'appuntamento sara' fissato per il giorno {{day}} alle {{time}}"
+    "confirmMessage": "L'appuntamento sara' fissato per il giorno {{day}} alle {{time}}",
+    "confirmed": "Appuntamento fissato correttamente",
+    "scheduleFailed": "Fallita registrazione nuovo appuntamento: {{error}}"
   }
 
 }

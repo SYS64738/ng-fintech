@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Credentials, User} from "../models/user";
-import {catchError, mapTo, Observable, of, switchMap, take, tap} from "rxjs";
+import {catchError, Observable, of, switchMap, take, tap} from "rxjs";
 import {UserStore} from "./user.store";
 import {Router} from "@angular/router";
 import {map} from "rxjs/operators";

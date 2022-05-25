@@ -113,7 +113,9 @@
     "chooseDate": "Choose a date",
     "slotsAvailable": "Available slots",
     "confirmTitle": "Confirm appointment ?",
-    "confirmMessage": "The appointment would be scheduled on {{day}} at {{time}}"
+    "confirmMessage": "The appointment would be scheduled on {{day}} at {{time}}",
+    "confirmed": "Appointment successfully scheduled",
+    "scheduleFailed": "Appointment scheduling failed: {{error}}"
   }
 
 }
