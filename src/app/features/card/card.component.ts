@@ -1,15 +1,15 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import {Card, CardForm} from "../../models/card";
 import {MatSidenav} from "@angular/material/sidenav";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {CardFormComponent} from "./card-form.component";
-import {CardService} from "../../api/card.service";
 import {MaskPipe} from "ngx-mask";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog.component";
 import {filter} from "rxjs";
 import {Router} from "@angular/router";
+import {CardStore} from "../../store/card.store";
 
 @Component({
   selector: 'ng-card',
@@ -25,7 +25,7 @@ import {Router} from "@angular/router";
         </mat-sidenav>
         <div [ngClass]="{'background': sidenav.opened}">
           <ng-cardlist
-            [cards]="cards"
+            [cards]="(cards$ | async) ?? []"
             (add)="showCardForm()"
             (delete)="deleteCard($event)"
             (goToMovements)="goToMovements($event)"
@@ -52,29 +52,25 @@ export class CardComponent implements OnInit {
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(CardFormComponent) cardForm!: CardFormComponent;
 
-  cards: Card[] = [];
+  // cards: Card[] = [];
+  cards$ = this.cardStore.card$;
 
-  constructor(private cardService: CardService,
+  constructor(public cardStore: CardStore,
               private snackBar: MatSnackBar,
               private translate: TranslateService,
               private maskPipe: MaskPipe,
               private dialog: MatDialog,
-              private router: Router) {}
-
-  ngOnInit() {
-    this.getCards();
+              private router: Router) {
+    // this.cards$ = this.cardStore.card$;
   }
 
-  getCards() {
-    this.cardService.list()
-      .subscribe(cards => {
-        this.cards = cards;
-      });
+  ngOnInit() {
+    this.cardStore.list();
   }
 
   insertCard(cardForm: CardForm) {
     // controllo se non l'ho gia'...
-    if (this.cards.findIndex(card => card.number === cardForm.number) !== -1) {
+    if (this.cardStore.alreadyExists(cardForm.number)) {
       // conferma utente...
       this.snackBar.open(
         this.translate.instant('card.alreadyExists',
@@ -83,10 +79,8 @@ export class CardComponent implements OnInit {
         {duration: 3000, panelClass: ['sb-warning']}
       );
     } else {
-      this.cardService.insert(cardForm)
+      this.cardStore.insert(cardForm)
         .subscribe(card => {
-          // aggiungo allo store...
-          this.cards = [...this.cards, card];
           // conferma utente...
           this.snackBar.open(
             this.translate.instant('card.cardRegistered',
@@ -114,13 +108,11 @@ export class CardComponent implements OnInit {
         filter(dialogResult => dialogResult)
       )
       .subscribe(() => {
-        this.cardService.delete(card._id)
+        this.cardStore.delete(card._id)
           .pipe(
             filter(result => result)
           )
           .subscribe(() => {
-            // rimuovo dallo store...
-            this.cards = this.cards.filter(c => c._id !== card._id);
             // conferma utente...
             this.snackBar.open(
               this.translate.instant('card.cardDeleted',

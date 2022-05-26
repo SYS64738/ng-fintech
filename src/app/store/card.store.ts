@@ -1,8 +1,7 @@
 import {Injectable} from "@angular/core";
 import {Card, CardForm} from "../models/card";
-import {BehaviorSubject, filter, Observable, of, share, shareReplay, Subject, switchMap, take} from "rxjs";
+import {BehaviorSubject, Observable, tap} from "rxjs";
 import {CardService} from "../api/card.service";
-import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -21,17 +20,21 @@ export class CardStore {
       });
   }
 
-  /*
-  insert(cardForm: CardForm): Subject<Card> {
-    const done = new Subject<null>();
-    this.cardService.insert(cardForm);
+  insert(cardForm: CardForm): Observable<Card> {
+    return this.cardService.insert(cardForm).pipe(
+      tap(card => this._cards$.next([...this._cards$.getValue(), card]))
+    );
   }
-  */
+
+  delete(id: string): Observable<boolean> {
+    return this.cardService.delete(id).pipe(
+      tap(() => this._cards$.next(this._cards$.getValue().filter(c => c._id !== id)))
+    )
+  }
 
   alreadyExists(cardNumber: string): boolean {
     return this._cards$.getValue().findIndex(c => c.number === cardNumber) !== -1;
   }
-
 
 
 }
