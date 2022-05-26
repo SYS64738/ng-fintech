@@ -7,6 +7,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog.component';
 import {MaterialModule} from "./material/material.module";
 import {TranslateModule} from "@ngx-translate/core";
 import {LeafletComponent} from "./components/leaflet.component";
+import {EqualFieldsValidator} from "./validators/equal-fields.validator";
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import {LeafletComponent} from "./components/leaflet.component";
     AbbreviatePipe,
     CustomCurrencyPipe,
     ConfirmDialogComponent,
-    LeafletComponent
+    LeafletComponent,
+    EqualFieldsValidator
   ],
   imports: [
     CommonModule,
@@ -26,7 +28,8 @@ import {LeafletComponent} from "./components/leaflet.component";
     AbbreviatePipe,
     CustomCurrencyPipe,
     ConfirmDialogComponent,
-    LeafletComponent
+    LeafletComponent,
+    EqualFieldsValidator
   ]
 })
 export class SharedModule { }

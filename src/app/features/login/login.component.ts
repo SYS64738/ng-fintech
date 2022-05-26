@@ -109,7 +109,7 @@ export class LoginComponent implements OnInit {
       .subscribe((result) => {
         if (result) {
           this.snackBar.open(
-            this.translate.instant('login.userRegistered', {user: credentials.name}),
+            this.translate.instant('login.userRegistered', {user: `${credentials.name} ${credentials.surname}`}),
             undefined,
             {duration: 3000, panelClass: ['sb-success']}
           );

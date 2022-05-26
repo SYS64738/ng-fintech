@@ -1,16 +1,15 @@
 import {Component, EventEmitter, Output} from "@angular/core";
-import {Credentials, User} from "../../models/user";
-import {MatSnackBar} from "@angular/material/snack-bar";
-import {TranslateService} from "@ngx-translate/core";
-
-type Registration = Credentials & {repeatPassword: string}
+import {Credentials} from "../../models/user";
 
 @Component({
   selector: 'ng-register',
   template: `
 
-    <form #f="ngForm" (ngSubmit)="confirm(f.value)">
-
+    <form
+      #f="ngForm"
+      ngEqualFields [equalFields]="['password', 'repeatPassword']"
+      (ngSubmit)="register.emit(f.value)"
+    >
       <mat-form-field class="mat-input-login" appearance="fill">
         <mat-icon matPrefix class="mat-icon-prefix" color="primary">person</mat-icon>
         <mat-label>{{ 'login.email' | translate }}</mat-label>
@@ -64,6 +63,10 @@ type Registration = Credentials & {repeatPassword: string}
         </mat-error>
       </mat-form-field>
 
+      <!--
+      <div ngModelGroup="pwg" #pwg="ngModelGroup" ngEqualFields [equalFields]="['password', 'repeatPassword']">
+      -->
+
       <mat-form-field class="mat-input-login" appearance="fill">
         <mat-icon matPrefix class="mat-icon-prefix" color="primary">vpn_key</mat-icon>
         <mat-label>{{ 'login.password' | translate }}</mat-label>
@@ -113,6 +116,17 @@ type Registration = Credentials & {repeatPassword: string}
         </mat-error>
       </mat-form-field>
 
+      <mat-error
+        *ngIf="f.hasError('equalFieldsValidator') && f.dirty"
+        style="margin-bottom: 10px; font-size: small"
+      >
+        {{ 'login.passwordNotCorresponding' | translate }}
+      </mat-error>
+
+      <!--
+      </div>
+      -->
+
       <button
         class="button-login"
         mat-raised-button type="submit"
@@ -150,18 +164,6 @@ type Registration = Credentials & {repeatPassword: string}
 export class RegisterComponent {
 
   @Output() register = new EventEmitter<Credentials>();
-
   showPassword: boolean = false;
-
-  constructor(private snackBar: MatSnackBar,
-              private translate: TranslateService) {
-  }
-
-  confirm(registration: Registration) {
-    if (registration.password !== registration.repeatPassword)
-      this.snackBar.open(this.translate.instant('login.passwordNotCorresponding'), undefined,{duration: 3000, panelClass: ['sb-error']});
-    else
-      this.register.emit(registration);
-  }
 
 }
