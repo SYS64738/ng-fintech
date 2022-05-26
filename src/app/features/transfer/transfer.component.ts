@@ -10,6 +10,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {TransferService} from "../../api/transfer.service";
 import {TransferForm} from "../../models/transfer";
+import {TransferValidator} from "./transfer.validator";
 
 @Component({
   selector: 'ng-transfer',
@@ -73,34 +74,49 @@ import {TransferForm} from "../../models/transfer";
 
           </ng-container>
 
-          <mat-form-field class="mat-input-large" appearance="fill">
-            <mat-label>{{ 'transfer.amount' | translate }}</mat-label>
-            <input
-              formControlName="amount"
-              matInput
-              autocomplete="off"
-              placeholder="{{ 'transfer.amount' | translate }}"
-              mask="separator.2"
-              thousandSeparator="."
-            >
-            <mat-error>
-              {{ 'transfer.amountRequired' | translate }}
-            </mat-error>
-          </mat-form-field>
+          <ng-container formGroupName="transfer">
 
-          <mat-form-field class="mat-input-large" appearance="fill">
-            <mat-label>{{ 'transfer.chooseCard' | translate }}</mat-label>
-            <mat-select
-              formControlName="card"
-            >
-              <mat-option
-                *ngFor="let card of cards"
-                [value]="card._id"
+            <mat-form-field class="mat-input-large" appearance="fill">
+              <mat-label>{{ 'transfer.amount' | translate }}</mat-label>
+              <input
+                formControlName="amount"
+                matInput
+                autocomplete="off"
+                placeholder="{{ 'transfer.amount' | translate }}"
+                mask="separator.2"
+                prefix="{{ 'currency' | translate }} "
+                thousandSeparator="."
               >
-                {{ card.number | mask: '0000 0000 0000 0000' }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              <mat-error>
+                {{ 'transfer.amountRequired' | translate }}
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field class="mat-input-large" appearance="fill">
+              <mat-label>{{ 'transfer.chooseCard' | translate }}</mat-label>
+              <mat-select
+                formControlName="card"
+              >
+                <mat-option
+                  *ngFor="let card of cards"
+                  [value]="card._id"
+                >
+                  {{ card.number | mask: '0000 0000 0000 0000' }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+          </ng-container>
+
+          <div *ngIf="transfer.hasError('transfer')"
+               style="margin-bottom: 30px; display: flex; align-content: center; justify-content: center; width: 100%"
+          >
+            <mat-chip-list>
+              <mat-chip color="warn" selected>
+                {{ 'transfer.unavailableAmount' | translate }}{{ 'currency' | translate }} {{ transfer.errors!['transfer'] | mask: 'separator.2' : '.' }}
+              </mat-chip>
+            </mat-chip-list>
+          </div>
 
           <button
             mat-raised-button
@@ -110,6 +126,7 @@ import {TransferForm} from "../../models/transfer";
           </button>
 
         </form>
+
       </div>
 
       <!--
@@ -146,8 +163,12 @@ export class TransferComponent implements OnInit {
       surname: ['', Validators.required],
       iban: ['', Validators.required]
     }),
-    amount: [null, Validators.required],
-    card: ['', Validators.required],
+    transfer: this.fb.group({
+      amount: [null, Validators.required],
+      card: ['', Validators.required],
+    }, {
+      asyncValidators: [this.transferValidator.validate()]
+    })
   });
 
   constructor(private fb: FormBuilder,
@@ -155,7 +176,8 @@ export class TransferComponent implements OnInit {
               private transferService: TransferService,
               private dialog: MatDialog,
               private snackBar: MatSnackBar,
-              private translate: TranslateService) {}
+              private translate: TranslateService,
+              private transferValidator: TransferValidator) {}
 
   ngOnInit(): void {
     this.getCards();
@@ -163,6 +185,10 @@ export class TransferComponent implements OnInit {
 
   get contact(): FormGroup {
     return this.transferForm.get('contact') as FormGroup;
+  }
+
+  get transfer(): FormGroup {
+    return this.transferForm.get('transfer') as FormGroup;
   }
 
   getCards(): void {
@@ -193,13 +219,13 @@ export class TransferComponent implements OnInit {
   }
 
   doTransfer(fd: FormGroupDirective) {
-    console.log(this.transferForm.value);
+    // console.log(this.transferForm.value);
     const tf: TransferForm = {
       name: this.contact.get('name')!.value,
       surname: this.contact.get('surname')!.value,
       iban: this.contact.get('iban')!.value,
-      amount: this.transferForm.get('amount')!.value,
-      cardId: this.transferForm.get('card')!.value
+      amount: this.transfer.get('amount')!.value,
+      cardId: this.transfer.get('card')!.value
     }
     this.transferService.transfer(tf)
       .subscribe(ret => {

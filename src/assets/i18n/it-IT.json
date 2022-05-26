@@ -96,6 +96,7 @@
     "amountRequired": "L'importo e' obbligatorio",
     "cardRequired": "La carta e' obbligatoria",
     "transferDone": "Trasferimento effettuato correttamente",
+    "unavailableAmount": "Credito insufficiente, disponibile: ",
     "contact": {
       "search": "Cerca contatto",
       "new": "Nuovo contatto",

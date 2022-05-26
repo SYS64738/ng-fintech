@@ -96,6 +96,7 @@
     "amountRequired": "Amount required",
     "cardRequired": "Card required",
     "transferDone": "Transfer completed successfully",
+    "unavailableAmount": "Insufficient credit, available: ",
     "contact": {
       "search": "Search recipient",
       "new": "New recipient",
