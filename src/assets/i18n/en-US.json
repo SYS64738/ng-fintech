@@ -70,7 +70,7 @@
     "securityCodeValidRequired": "Invalid security code",
     "alreadyExists": "Card {{value}} already exists",
     "cardDeleteConfirm": "Are you sure to remove card: {{value}} ?",
-    "cardDeleted": "Card {{value}} has been successfully deleted"
+    "cardDeleted": "Card has been successfully deleted"
   },
 
   "movement": {

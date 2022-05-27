@@ -70,7 +70,7 @@
     "securityCodeValidRequired": "Codice di sicurezza non valido",
     "alreadyExists": "La carta {{value}} esiste gia'",
     "cardDeleteConfirm": "Confermi la cancellazione della carta: {{value}} ?",
-    "cardDeleted": "La carta {{value}} e' stata rimossa correttamente"
+    "cardDeleted": "La carta e' stata rimossa correttamente"
   },
 
   "movement": {

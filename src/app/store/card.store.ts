@@ -3,6 +3,11 @@ import {Card, CardForm} from "../models/card";
 import {BehaviorSubject, Observable, tap} from "rxjs";
 import {CardService} from "../api/card.service";
 
+/**
+ * UNUSED: OLD VERSION WITH BEHAVIORSUBJECT
+ *
+ * @deprecated
+ */
 @Injectable({
   providedIn: 'root'
 })

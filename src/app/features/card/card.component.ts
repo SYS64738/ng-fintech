@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Card, CardForm} from "../../models/card";
 import {MatSidenav} from "@angular/material/sidenav";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -7,9 +7,13 @@ import {CardFormComponent} from "./card-form.component";
 import {MaskPipe} from "ngx-mask";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog.component";
-import {filter} from "rxjs";
+import {filter, Subscription, take} from "rxjs";
 import {Router} from "@angular/router";
-import {CardStore} from "../../store/card.store";
+import {ActionsSubject, Store} from "@ngrx/store";
+import {existsCard, selectCards} from "../../store/card/card.selectors";
+import {insertCard, insertCardSuccess, getCards, deleteCard, deleteCardSuccess} from "../../store/card/card.actions";
+import {ofType} from "@ngrx/effects";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'ng-card',
@@ -47,51 +51,86 @@ import {CardStore} from "../../store/card.store";
 
   `]
 })
-export class CardComponent implements OnInit {
+export class CardComponent implements OnInit, OnDestroy {
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(CardFormComponent) cardForm!: CardFormComponent;
 
-  // cards: Card[] = [];
-  cards$ = this.cardStore.card$;
+  cards$ = this.store.select(selectCards);
+  actionsSubscriptions = new Subscription();
 
-  constructor(public cardStore: CardStore,
+  constructor(public store: Store,
+              private actionListener$: ActionsSubject,
               private snackBar: MatSnackBar,
               private translate: TranslateService,
               private maskPipe: MaskPipe,
               private dialog: MatDialog,
               private router: Router) {
-    // this.cards$ = this.cardStore.card$;
   }
 
   ngOnInit() {
-    this.cardStore.list();
+    this.addInsertCardHook();
+    this.addDeleteCardHook();
+    this.store.dispatch(getCards());
+  }
+
+  ngOnDestroy() {
+    this.actionsSubscriptions.unsubscribe();
+  }
+
+  addInsertCardHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(insertCardSuccess),
+        map(data => data.card)
+      ).subscribe(card => {
+        // conferma utente...
+        this.snackBar.open(
+          this.translate.instant('card.cardRegistered',
+            {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
+          undefined,
+          {duration: 3000, panelClass: ['sb-success']}
+        );
+        // pulizia...
+        this.cleanUp();
+      })
+    );
+  }
+
+  addDeleteCardHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(deleteCardSuccess),
+      ).subscribe(card => {
+        // conferma utente...
+        this.snackBar.open(
+          this.translate.instant('card.cardDeleted'),
+          undefined,
+          {duration: 3000, panelClass: ['sb-success']}
+        );
+        // pulizia...
+        this.cleanUp();
+      })
+    );
   }
 
   insertCard(cardForm: CardForm) {
-    // controllo se non l'ho gia'...
-    if (this.cardStore.alreadyExists(cardForm.number)) {
-      // conferma utente...
-      this.snackBar.open(
-        this.translate.instant('card.alreadyExists',
-          {value: this.maskPipe.transform(cardForm.number, '0000 0000 0000 0000')}),
-        undefined,
-        {duration: 3000, panelClass: ['sb-warning']}
-      );
-    } else {
-      this.cardStore.insert(cardForm)
-        .subscribe(card => {
-          // conferma utente...
-          this.snackBar.open(
-            this.translate.instant('card.cardRegistered',
-              {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
-            undefined,
-            {duration: 3000, panelClass: ['sb-success']}
-          );
-          // pulizia...
-          this.cleanUp();
-        });
-    }
+    this.store.select(existsCard(cardForm.number)).pipe(
+      take(1)
+    ).subscribe(alreadyExists => {
+      if (alreadyExists) {
+        // carta gia' esistente...
+        this.snackBar.open(
+          this.translate.instant('card.alreadyExists',
+            {value: this.maskPipe.transform(cardForm.number, '0000 0000 0000 0000')}),
+          undefined,
+          {duration: 3000, panelClass: ['sb-warning']}
+        );
+      } else {
+        // mando avanti l'inserimento...
+        this.store.dispatch(insertCard({cardForm}));
+      }
+    });
   }
 
   deleteCard(card: Card) {
@@ -103,25 +142,9 @@ export class CardComponent implements OnInit {
           {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')})
       }
     });
-    dialogRef.afterClosed()
-      .pipe(
-        filter(dialogResult => dialogResult)
-      )
-      .subscribe(() => {
-        this.cardStore.delete(card._id)
-          .pipe(
-            filter(result => result)
-          )
-          .subscribe(() => {
-            // conferma utente...
-            this.snackBar.open(
-              this.translate.instant('card.cardDeleted',
-                {value: this.maskPipe.transform(card.number, '0000 0000 0000 0000')}),
-              undefined,
-              {duration: 3000, panelClass: ['sb-success']}
-            );
-          })
-      });
+    dialogRef.afterClosed().pipe(
+      filter(dialogResult => dialogResult)
+    ).subscribe(() => this.store.dispatch(deleteCard({ id: card._id })));
   }
 
   goToMovements(card: Card) {

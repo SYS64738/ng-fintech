@@ -31,7 +31,7 @@ import {Contact} from "../../../models/contact";
         <mat-list-item *ngFor="let contact of contacts | contactListFilter: search.value | contactListSort">
           <mat-icon mat-list-icon>account_circle</mat-icon>
           <div mat-line>{{ contact.name }} {{contact.surname}}</div>
-          <div mat-line>{{ contact.iban | mask: 'SS00 S000 0000 0000 0000 0000 000' }}</div>
+          <div mat-line>{{ contact.iban | mask: 'SS00 S000 0000 0000 0000 0000 000' | uppercase }}</div>
           <button mat-icon-button (click)="select.emit(contact._id)">
             <mat-icon matTooltip="{{ 'transfer.contact.selectTT' | translate }}">check</mat-icon>
           </button>

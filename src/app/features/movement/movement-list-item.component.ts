@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MovementType} from "../../models/movement";
 import {TranslateService} from "@ngx-translate/core";
+import {MaskPipe} from "ngx-mask";
 
 @Component({
   selector: 'ng-movementlistitem',
@@ -15,7 +16,7 @@ import {TranslateService} from "@ngx-translate/core";
           >
             {{ 'currency' | translate}} {{ amount | customCurrency : translate.currentLang }}
           </h5>
-          <h5>{{ title }}</h5>
+          <h5>{{ parseIBAN(title) }}</h5>
         </mat-panel-description>
         <mat-panel-description *ngIf="description">
           {{ description | abbreviate: 20 }}
@@ -61,9 +62,12 @@ import {TranslateService} from "@ngx-translate/core";
       max-width: 50%;
     }
 
-  `]
+  `],
+  providers: [
+    MaskPipe
+  ]
 })
-export class MovementListItemComponent implements OnInit {
+export class MovementListItemComponent {
 
   @Input() referenceDate: string | null = null;
   @Input() type: MovementType | null = null;
@@ -71,9 +75,17 @@ export class MovementListItemComponent implements OnInit {
   @Input() title: string | null = null;
   @Input() description: string | null = null;
 
-  constructor(public translate: TranslateService) { }
+  constructor(public translate: TranslateService,
+              private maskPipe: MaskPipe) { }
 
-  ngOnInit(): void {
+  parseIBAN(title: string | null): string | null {
+    let t = title;
+    if (title && title.includes('[') && title.includes(']')) {
+      // @ts-ignore
+      t = title.split('[').pop().split(']')[0];
+      t = title.replace(t, this.maskPipe.transform(t, 'SS00 S000 0000 0000 0000 0000 000').toUpperCase());
+    }
+    return t;
   }
 
 }

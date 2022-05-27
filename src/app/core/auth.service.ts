@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Credentials, User} from "../models/user";
 import {catchError, Observable, of, switchMap, take, tap} from "rxjs";
-import {UserStore} from "./user.store";
+import {UserStore} from "../store/user.store";
 import {Router} from "@angular/router";
 import {map} from "rxjs/operators";
 import {MatSnackBar} from "@angular/material/snack-bar";

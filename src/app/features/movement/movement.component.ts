@@ -1,12 +1,15 @@
 import {Component, OnInit, ViewChild,} from '@angular/core';
 import {MatAccordion} from "@angular/material/expansion";
-import {Movement} from "../../models/movement";
-import {CardService} from "../../api/card.service";
-import {Card} from "../../models/card";
-import {BehaviorSubject, combineLatest, filter} from "rxjs";
-import {environment} from "../../../environments/environment";
 import {ActivatedRoute} from "@angular/router";
-import {map} from "rxjs/operators";
+import {selectCards} from "../../store/card/card.selectors";
+import {Store} from "@ngrx/store";
+import {getCards} from "../../store/card/card.actions";
+import {getNextMovements, setCard} from "../../store/movement/movement.actions";
+import {
+  isOtherMovements,
+  selectCard,
+  selectMovements, selectPartial, selectTotal
+} from "../../store/movement/movement.selectors";
 
 @Component({
   selector: 'ng-movement',
@@ -17,7 +20,7 @@ import {map} from "rxjs/operators";
         <mat-form-field class="mat-input-1_3" appearance="fill">
           <mat-label>{{ 'movement.chooseCard' | translate }}</mat-label>
           <mat-select
-            [ngModel]="selectedCardId$ | async"
+            [ngModel]="selectedCard$ | async"
           >
             <mat-option
               *ngFor="let card of (cards$ | async)"
@@ -28,14 +31,16 @@ import {map} from "rxjs/operators";
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <h3 *ngIf="movements.length > 0">{{ 'movement.menu' | translate }}: {{ movements.length }} / {{ totalMovements }}</h3>
+        <ng-container *ngIf="(partialMovements$ | async) as m">
+            <h3 *ngIf="m > 0">{{ 'movement.menu' | translate }}: {{ m }} / {{ totalMovements$ | async }}</h3>
+        </ng-container>
       </div>
 
       <mat-accordion
         [multi]="true"
         displayMode="flat"
       >
-        <ng-movementlistitem *ngFor="let movement of movements"
+        <ng-movementlistitem *ngFor="let movement of (movements$ | async)"
           [referenceDate]="movement.timestamp | date: 'dd/MM/yyyy'"
           [amount]="movement.amount"
           [type]="movement.type"
@@ -45,7 +50,7 @@ import {map} from "rxjs/operators";
       </mat-accordion>
 
       <button
-        *ngIf="movements.length > 0 && movements.length < totalMovements"
+        *ngIf="isOtherMovements$ | async"
         mat-stroked-button
         class="button-other"
         (click)="getNextMovements()"
@@ -94,68 +99,27 @@ export class MovementComponent implements OnInit {
   accordionOpen = false;
   @ViewChild(MatAccordion) accordion!: MatAccordion;
 
-  cards$ = new BehaviorSubject<Card[]>([]);
-  selectedCardId$ = new BehaviorSubject<string>('');
-  selectedCard$ = combineLatest([this.cards$, this.selectedCardId$])
-    .pipe(
-      map(([cards, cardId]) => cards.find(c => c._id === cardId))
-    )
+  cards$ = this.store.select(selectCards);
+  selectedCard$ = this.store.select(selectCard)
+  movements$ = this.store.select(selectMovements);
+  isOtherMovements$ = this.store.select(isOtherMovements);
+  totalMovements$ = this.store.select(selectTotal);
+  partialMovements$ = this.store.select(selectPartial);
 
-  activeCardId: string | null = null;
-  movements: Movement[] = [];
-  totalMovements: number = 0;
-  currentOffset: number = 0;
-
-  constructor(private cardService: CardService,
+  constructor(public store: Store,
               private activatedRouted: ActivatedRoute) {
     if (activatedRouted.snapshot.params.hasOwnProperty('cardId')) {
-      this.selectedCardId$.next(activatedRouted.snapshot.params['cardId']);
-      this.activeCardId = activatedRouted.snapshot.params['cardId'];
-      this.cardChange(this.activeCardId!);
+      const paramCardId = activatedRouted.snapshot.params['cardId'];
+      this.cardChange(paramCardId);
     }
   }
 
   ngOnInit(): void {
-    this.getCards();
+    this.store.dispatch(getCards());
   }
 
-  getCards(): void {
-    this.cardService.list()
-      .subscribe(cards => {
-        this.cards$.next(cards);
-      });
-  }
-
-  cardChange(cardId: string): void {
-    console.log('cardChange', cardId);
-    // riazzero l'ambiente...
-    this.movements = [];
-    this.totalMovements = 0;
-    this.currentOffset = 0;
-    // la carta diventa quella attiva...
-    this.activeCardId = cardId;
-    // estraggo i movimenti della carta...
-    this.getMovements();
-  }
-
-  getNextMovements() {
-    // incremento l'offset...
-    this.currentOffset += environment.movementLimit;
-    // estraggo i prossimi movimenti...
-    this.getMovements();
-  }
-
-  getMovements() {
-    this.cardService.listMovements(this.activeCardId!, environment.movementLimit, this.currentOffset)
-      .pipe(
-        filter(result => result.data && result.data.length > 0)
-      )
-      .subscribe(result => {
-        // salvo comunque il totale...
-        this.totalMovements = result.total;
-        this.movements = [...this.movements, ...result.data];
-      });
-  }
+  cardChange = (cardId: string) => this.store.dispatch(setCard({card: cardId}));
+  getNextMovements = () => this.store.dispatch(getNextMovements());
 
   toggleAll() {
     this.accordionOpen ? this.accordion.closeAll() : this.accordion.openAll();

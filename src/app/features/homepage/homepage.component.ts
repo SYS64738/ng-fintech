@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {UserStore} from "../../core/user.store";
+import {UserStore} from "../../store/user.store";
 import {take} from "rxjs";
 
 @Component({

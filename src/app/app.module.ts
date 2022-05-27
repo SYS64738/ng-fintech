@@ -11,6 +11,23 @@ import {TranslateHttpLoader} from "@ngx-translate/http-loader";
 import {CoreModule} from "./core/core.module";
 import {NgxMaskModule} from "ngx-mask";
 import {CommonErrorHandler} from "./shared/common-error-handler";
+import {MetaReducer, StoreModule} from "@ngrx/store";
+import {cardsFeature, cardsReducer} from "./store/card/card.reducer";
+import {StoreDevtoolsModule} from "@ngrx/store-devtools";
+import {EffectsModule} from "@ngrx/effects";
+import {CardEffects} from "./store/card/card.effects";
+import {movementsReducer} from "./store/movement/movement.reducer";
+import {MovementEffects} from "./store/movement/movement.effects";
+
+/*
+export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
+  return localStorageSync({
+    keys: ['todos'],
+    rehydrate: true,
+  })(reducer);
+}
+*/
+const metaReducers: Array<MetaReducer<any, any>> = []; // [localStorageSyncReducer];
 
 @NgModule({
   declarations: [
@@ -36,6 +53,16 @@ import {CommonErrorHandler} from "./shared/common-error-handler";
       }
     }),
     NgxMaskModule.forRoot(),
+    StoreModule.forRoot({
+      cards: cardsReducer,
+      movements: movementsReducer
+    }, {
+      metaReducers
+    }),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25
+    }),
+    EffectsModule.forRoot([CardEffects, MovementEffects])
   ],
   providers: [
     {

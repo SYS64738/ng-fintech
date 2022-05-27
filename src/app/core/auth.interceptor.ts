@@ -7,7 +7,7 @@ import {
   HttpRequest
 } from "@angular/common/http";
 import {catchError, Observable, throwError} from "rxjs";
-import {UserStore} from "./user.store";
+import {UserStore} from "../store/user.store";
 import {Router} from "@angular/router";
 
 @Injectable()

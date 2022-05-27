@@ -11,7 +11,7 @@ import {DateAdapter} from "@angular/material/core";
 import {ThemeService} from "./core/themes/theme.service";
 import {Theme} from './models';
 import {AuthService} from "./core/auth.service";
-import {UserStore} from "./core/user.store";
+import {UserStore} from "./store/user.store";
 
 @Component({
   selector: 'ng-root',
