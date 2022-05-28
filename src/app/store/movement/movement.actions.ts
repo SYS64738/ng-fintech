@@ -12,14 +12,14 @@ export const setCard = createAction('[Movements] setCard',
  * GET MOVEMENTS
  */
 export const getMovements = createAction('[Movements] getMovements',
-  props<
-    {
-      cardId: string,
-      limit?: number,
-      offset?: number
-    }>()
+  props<{ cardId: string, limit?: number, offset?: number }>()
 );
+
+/**
+ * GET NEXT MOVEMENTS
+ */
 export const getNextMovements = createAction('[Movements] getNextMovements');
+
 export const getMovementsSuccess = createAction('[Movements] getMovements success',
   props<{ movements: MovementList }>()
 );

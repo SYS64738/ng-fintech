@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
       shareReplay()
     );
 
-  themes$: Observable<Array<Theme>> = this.themeService.getThemes();
+  themes$: Observable<Theme[]> = this.themeService.getThemes();
 
   constructor(
     public userStore: UserStore,
@@ -60,7 +60,7 @@ export class AppComponent implements OnInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       map((event: NavigationEnd) => event.url)
     ).subscribe((url) => {
-      console.log(`navigate to: ${url}`);
+      console.log(`navigate to > ${url}`);
       this.setTitle(url);
       this.loginPage = url === '/' || url === '/login';
     });
@@ -73,7 +73,7 @@ export class AppComponent implements OnInit {
 
   goToHome = () => this.router.navigateByUrl('homepage');
 
-  setTitle = (url: string) => this.title = `${url.substring(1)}.menu`;
+  setTitle = (url: string) => this.title = `${url !== '/' ? url.substring(1) : 'login'}.menu`;
 
   useTheme = (theme: string) => this.themeService.setTheme(theme);
 

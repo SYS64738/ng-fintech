@@ -4,7 +4,7 @@ import {Actions, concatLatestFrom, createEffect, ofType} from "@ngrx/effects";
 import {CardService} from "../../api/card.service";
 import {catchError, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
-import {getMovements, getMovementsFail, getMovementsSuccess, getNextMovements, setCard} from "./movement.actions";
+import * as MovementAction from "./movement.actions";
 import {selectCard, selectLimit, selectOffset} from "./movement.selectors";
 
 @Injectable()
@@ -15,21 +15,21 @@ export class MovementEffects {
               private cardService: CardService) {}
 
   getMovements$ = createEffect(() => this.actions.pipe(
-    ofType(getMovements),
+    ofType(MovementAction.getMovements),
     concatLatestFrom(() =>
       [
         this.store.select(selectLimit),
         this.store.select(selectOffset)
       ]
     ),
-    switchMap(([action, limit, offset]) => this.cardService.listMovements(action.cardId, limit as number, offset as number).pipe(
-      map(movements => getMovementsSuccess({ movements })),
-      catchError(() => of(getMovementsFail()))
+    switchMap(([action, limit, offset]) => this.cardService.listMovements(action.cardId, limit, offset).pipe(
+      map(movements => MovementAction.getMovementsSuccess({ movements })),
+      catchError(() => of(MovementAction.getMovementsFail()))
     ))
   ))
 
   getNextMovement$ = createEffect(() => this.actions.pipe(
-    ofType(getNextMovements),
+    ofType(MovementAction.getNextMovements),
     concatLatestFrom(() =>
       [
         this.store.select(selectCard),
@@ -37,12 +37,12 @@ export class MovementEffects {
         this.store.select(selectOffset)
       ]
     ),
-    map(([action, card, limit, offset]) => getMovements({cardId: card!, limit, offset}))
+    map(([action, card, limit, offset]) => MovementAction.getMovements({cardId: card!, limit, offset}))
   ))
 
   setCard$ = createEffect(() => this.actions.pipe(
-    ofType(setCard),
-    map(action => getMovements({cardId: action.card}))
+    ofType(MovementAction.setCard),
+    map(action => MovementAction.getMovements({cardId: action.card}))
   ))
 
 }

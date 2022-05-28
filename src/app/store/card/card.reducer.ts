@@ -1,6 +1,6 @@
 import {Card} from "../../models/card";
 import {createFeature, createReducer, on} from "@ngrx/store";
-import {insertCardSuccess, getCardsSuccess, deleteCardSuccess} from "./card.actions";
+import * as CardActions from "./card.actions";
 
 export interface CardsState {
   cards: Card[]
@@ -12,19 +12,19 @@ const initialState: CardsState = {
 
 export const cardsReducer = createReducer(
   initialState,
-  on(getCardsSuccess, (state, action) => {
+  on(CardActions.getCardsSuccess, (state, action) => {
     return {
       ...state,
       cards: action.cards
     }
   }),
-  on(insertCardSuccess, (state, action) => {
+  on(CardActions.insertCardSuccess, (state, action) => {
     return {
       ...state,
       cards: [...state.cards, action.card]
     }
   }),
-  on(deleteCardSuccess, (state, action) => {
+  on(CardActions.deleteCardSuccess, (state, action) => {
     return {
       ...state,
       cards: state.cards.filter(c => c._id !== action.id)

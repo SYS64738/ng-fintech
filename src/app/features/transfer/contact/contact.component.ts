@@ -1,29 +1,39 @@
 import {Component, OnInit} from "@angular/core";
 import {MatDialogRef} from "@angular/material/dialog";
 import {Contact, ContactForm} from "../../../models/contact";
-import {ContactService} from "../../../api/contact.service";
-import {Observable} from "rxjs";
+import {Store} from "@ngrx/store";
+import {selectContacts, selectedContact} from "../../../store/contact/contact.selectors";
+import {
+  deleteContact,
+  getContacts,
+  insertContact,
+  insertContactSuccess,
+  updateContact,
+  updateContactSuccess
+} from "../../../store/contact/contact.actions";
+import {Observable, Subscription, take} from "rxjs";
+import {Actions, ofType} from "@ngrx/effects";
 
 @Component({
   selector: 'ng-contact',
   template: `
 
-    <!-- nuovo contatto -->
-    <ng-container *ngIf="editMode; else contactList">
+    <!-- aad/edit contatto -->
+    <ng-container *ngIf="editingMode; else contactList">
 
       <button
         class="button"
         style="margin-bottom: 30px"
         mat-stroked-button
         type="button"
-        (click)="editMode = false"
+        (click)="editingMode = false"
       >
         {{ 'transfer.contact.back' | translate }}
       </button>
 
       <ng-contact-form
-        [contact]="selectedContact"
-        (save)="upsertContact($event)"
+        [contact]="(selectedContact$ | async) ?? null"
+        (save)="saveContact($event)"
       ></ng-contact-form>
 
     </ng-container>
@@ -32,9 +42,10 @@ import {Observable} from "rxjs";
     <ng-template #contactList>
 
       <ng-contact-list
-        [contacts]="contacts"
+        [contacts]="(contacts$ | async) ?? []"
         (select)="confirm($event)"
         (edit)="editContact($event)"
+        (delete)="deleteContact($event)"
       ></ng-contact-list>
 
       <button
@@ -42,7 +53,7 @@ import {Observable} from "rxjs";
         mat-raised-button
         type="button"
         color="primary"
-        (click)="editContact()"
+        (click)="addContact()"
       >
         {{ 'transfer.contact.new' | translate }}
       </button>
@@ -50,7 +61,7 @@ import {Observable} from "rxjs";
     </ng-template>
 
     <button
-      *ngIf="!editMode"
+      *ngIf="!editingMode"
       class="button"
       mat-stroked-button
       type="button"
@@ -72,62 +83,77 @@ import {Observable} from "rxjs";
 })
 export class ContactComponent implements OnInit {
 
-  editMode: boolean = false;
-  contacts: Contact[] = [];
-  selectedContact: Contact | null = null;
+  editingMode: boolean = false;
+  editingType: 'add' | 'edit' | null = null;
 
-  constructor(private contactService: ContactService,
+  contacts$ = this.store.select(selectContacts);
+  selectedContact$: Observable<Contact | undefined> | null = null;
+  actionsSubscriptions = new Subscription();
+
+  constructor(public store: Store,
+              private actionListener$: Actions,
               private dialogRef: MatDialogRef<ContactComponent>) {
     this.dialogRef.disableClose = true;
   }
 
   ngOnInit() {
-    this.getContacts();
+    this.addSaveContactHook();
+    this.store.dispatch(getContacts())
   }
 
-  getContacts() {
-    this.contactService.list()
-      .subscribe(contacts => {
-        this.contacts = contacts;
-      });
+  addSaveContactHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(insertContactSuccess, updateContactSuccess)
+      ).subscribe(() => {
+        this.editingType = null;
+        this.editingMode = false;
+      })
+    );
   }
 
-  editContact(_id?: string) {
-    if (_id) {
-      const sc = this.contacts.find(c => c._id === _id);
-      if (sc) {
-        this.selectedContact = {...sc};
-        this.editMode = true;
-      }
-    } else {
-      this.selectedContact = null;
-      this.editMode = true;
-    }
+  markAsSelected(id: string) {
+    this.selectedContact$ = this.store.select(selectedContact(id));
   }
 
-  upsertContact(contact: ContactForm) {
-    if (this.selectedContact) {
+  addContact() {
+    this.editingType = 'add';
+    this.editingMode = true;
+  }
+
+  editContact(id: string) {
+    this.markAsSelected(id);
+    this.editingType = 'edit';
+    this.editingMode = true;
+  }
+
+  deleteContact(id: string) {
+    this.store.dispatch(deleteContact({ id }));
+  }
+
+  saveContact(contactForm: ContactForm) {
+    if (this.editingType === 'edit') {
       // edit mode...
-      this.contactService.update(this.selectedContact._id, contact)
-        .subscribe(updatedContact => {
-          this.contacts = this.contacts.filter(c => c._id !== this.selectedContact?._id);
-          this.upsertContactCompleted(updatedContact);
-        });
+      this.selectedContact$!.pipe(
+        take(1)
+      ).subscribe(contact =>
+        this.store.dispatch(updateContact({ id: contact!._id, contactForm }))
+      );
     } else {
       // insert mode...
-      this.contactService.insert(contact)
-        .subscribe(insertedContact => {
-          this.upsertContactCompleted(insertedContact);
-        });
+      this.store.dispatch(insertContact({ contactForm }));
     }
   }
 
-  upsertContactCompleted(contact: Contact) {
-    this.contacts = [...this.contacts, contact];
-    this.editMode = false;
+  confirm(id: string) {
+    this.markAsSelected(id);
+    this.selectedContact$!.pipe(
+      take(1)
+    ).subscribe(contact => {
+      this.dialogRef.close(contact);
+    });
   }
 
-  confirm = (_id: string) => this.dialogRef.close(this.contacts.find(c => c._id === _id));
   cancel = () => this.dialogRef.close(null);
 
 }

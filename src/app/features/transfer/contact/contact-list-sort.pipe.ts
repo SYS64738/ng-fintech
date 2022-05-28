@@ -7,7 +7,7 @@ import {Contact} from "../../../models/contact";
 export class ContactListSortPipe implements PipeTransform {
 
   transform(value: Contact[], ...args: any[]): any {
-    return value.sort((a, b) =>
+    return [...value].sort((a, b) =>
       `${a.surname.toLowerCase()} ${a.name.toLowerCase()}` < `${b.surname.toLowerCase()} ${b.name.toLowerCase()}` ? -1 : 1);
   }
 

@@ -2,15 +2,7 @@ import {Injectable} from "@angular/core";
 import {Actions, createEffect, ofType} from "@ngrx/effects";
 import {Store} from "@ngrx/store";
 import {CardService} from "../../api/card.service";
-import {
-  insertCard,
-  insertCardFail,
-  insertCardSuccess,
-  getCards,
-  getCardsFail,
-  getCardsSuccess,
-  deleteCard, deleteCardFail, deleteCardSuccess
-} from "./card.actions";
+import * as CardActions from "./card.actions";
 import {catchError, mergeMap, of, switchMap, tap} from "rxjs";
 import {map} from "rxjs/operators";
 
@@ -22,31 +14,27 @@ export class CardEffects {
               private cardService: CardService) {}
 
   getCards$ = createEffect(() => this.actions.pipe(
-    ofType(getCards),
+    ofType(CardActions.getCards),
     switchMap(() => this.cardService.list().pipe(
-      map(cards => getCardsSuccess({ cards })),
-      catchError(() => of(getCardsFail()))
+      map(cards => CardActions.getCardsSuccess({ cards })),
+      catchError(() => of(CardActions.getCardsFail()))
     ))
   ))
 
   insertCard$ = createEffect(() => this.actions.pipe(
-    ofType(insertCard),
-    mergeMap(action => {
-      return this.cardService.insert(action.cardForm).pipe(
-        map(card => insertCardSuccess({ card })),
-        catchError(() => of(insertCardFail))
-      )
-    })
+    ofType(CardActions.insertCard),
+    mergeMap(action => this.cardService.insert(action.cardForm).pipe(
+      map(card => CardActions.insertCardSuccess({ card })),
+      catchError(() => of(CardActions.insertCardFail))
+    ))
   ))
 
   deleteCard$ = createEffect(() => this.actions.pipe(
-    ofType(deleteCard),
-    mergeMap(action => {
-      return this.cardService.delete(action.id).pipe(
-        map(card => deleteCardSuccess({ id: action.id })),
-        catchError(() => of(deleteCardFail))
-      )
-    })
+    ofType(CardActions.deleteCard),
+    mergeMap(action => this.cardService.delete(action.id).pipe(
+      map(() => CardActions.deleteCardSuccess({ id: action.id })),
+      catchError(() => of(CardActions.deleteCardFail))
+    ))
   ))
 
 }

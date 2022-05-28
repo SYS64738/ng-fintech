@@ -7,7 +7,7 @@ export const {
 
 export const selectCard = (id: string) => createSelector(
   selectCards,
-  (state) => state.filter(c => c._id === id)
+  (state) => state.find(c => c._id === id)
 )
 
 export const existsCard = (number: string) => createSelector(

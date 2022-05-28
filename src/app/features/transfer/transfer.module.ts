@@ -10,7 +10,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {ContactListComponent} from "./contact/contact-list.component";
 import {ContactComponent} from "./contact/contact.component";
 import {ContactListFilterPipe} from "./contact/contact-list-filter.pipe";
-import {ContactFormCompontent} from "./contact/contact-form.compontent";
+import {ContactFormComponent} from "./contact/contact-form.component";
 import {ContactListSortPipe} from "./contact/contact-list-sort.pipe";
 
 const routes: Routes = [
@@ -23,7 +23,7 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     ContactComponent,
-    ContactFormCompontent,
+    ContactFormComponent,
     ContactListComponent,
     ContactListFilterPipe,
     ContactListSortPipe,

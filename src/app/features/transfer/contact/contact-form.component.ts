@@ -73,7 +73,7 @@ import {Contact, ContactForm} from "../../../models/contact";
 
   `]
 })
-export class ContactFormCompontent implements OnChanges {
+export class ContactFormComponent implements OnChanges {
 
   @Input() contact: Contact | null = null;
   @Output() save = new EventEmitter<ContactForm>();

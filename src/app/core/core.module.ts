@@ -6,9 +6,11 @@ import {CommonModule} from "@angular/common";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {ApiInterceptor} from "./api.interceptor";
 import {AuthInterceptor} from "./auth.interceptor";
+import {LanguagesMenuComponent} from "./languages-menu.component";
 
 @NgModule({
   declarations: [
+    LanguagesMenuComponent,
     ThemesMenuComponent
   ],
   imports: [
@@ -29,6 +31,7 @@ import {AuthInterceptor} from "./auth.interceptor";
     }
   ],
   exports: [
+    LanguagesMenuComponent,
     ThemesMenuComponent
   ]
 })

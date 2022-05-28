@@ -29,8 +29,8 @@ export class ThemeService {
     private styleManager: StyleManagerService,
   ) {}
 
-  getThemes(): Observable<Array<Theme>> {
-    return this.http.get<Array<Theme>>("assets/themes/themes.json");
+  getThemes(): Observable<Theme[]> {
+    return this.http.get<Theme[]>("assets/themes/themes.json");
   }
 
   loadTheme() {

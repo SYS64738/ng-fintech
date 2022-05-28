@@ -12,7 +12,7 @@ import {Router} from "@angular/router";
 import {ActionsSubject, Store} from "@ngrx/store";
 import {existsCard, selectCards} from "../../store/card/card.selectors";
 import {insertCard, insertCardSuccess, getCards, deleteCard, deleteCardSuccess} from "../../store/card/card.actions";
-import {ofType} from "@ngrx/effects";
+import {Actions, ofType} from "@ngrx/effects";
 import {map} from "rxjs/operators";
 
 @Component({
@@ -60,7 +60,7 @@ export class CardComponent implements OnInit, OnDestroy {
   actionsSubscriptions = new Subscription();
 
   constructor(public store: Store,
-              private actionListener$: ActionsSubject,
+              private actionListener$: Actions,
               private snackBar: MatSnackBar,
               private translate: TranslateService,
               private maskPipe: MaskPipe,
@@ -128,7 +128,7 @@ export class CardComponent implements OnInit, OnDestroy {
         );
       } else {
         // mando avanti l'inserimento...
-        this.store.dispatch(insertCard({cardForm}));
+        this.store.dispatch(insertCard({ cardForm }));
       }
     });
   }

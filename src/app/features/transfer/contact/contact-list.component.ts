@@ -39,7 +39,7 @@ import {Contact} from "../../../models/contact";
             <mat-icon matTooltip="{{ 'transfer.contact.editTT' | translate }}">edit</mat-icon>
           </button>
           <button mat-icon-button (click)="delete.emit(contact._id)">
-            <mat-icon matTooltip="{{ 'transfer.contact.deleteTT' | translate }}">delete</mat-icon>
+            <mat-icon matTooltip="{{ 'transfer.contact.removeTT' | translate }}">delete</mat-icon>
           </button>
         </mat-list-item>
       </mat-list>
@@ -54,5 +54,9 @@ export class ContactListComponent {
   @Output() select = new EventEmitter<string>();
   @Output() edit = new EventEmitter<string>();
   @Output() delete = new EventEmitter<string>();
+
+  ngOnInit() {
+    console.log(this.contacts);
+  }
 
 }
