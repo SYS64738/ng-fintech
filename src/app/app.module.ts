@@ -20,6 +20,10 @@ import {movementsReducer} from "./store/movement/movement.reducer";
 import {MovementEffects} from "./store/movement/movement.effects";
 import {contactsReducer} from "./store/contact/contact.reducer";
 import {ContactEffects} from "./store/contact/contact.effects";
+import {TransferEffects} from "./store/transfer/transfer.effects";
+import {transferReducer} from "./store/transfer/transfer.reducer";
+import {AppointmentEffects} from "./store/appointment/appointment.effects";
+import {appointmentReducer} from "./store/appointment/appointment.reducer";
 
 /*
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -58,7 +62,9 @@ const metaReducers: Array<MetaReducer<any, any>> = []; // [localStorageSyncReduc
     StoreModule.forRoot({
       cards: cardsReducer,
       movements: movementsReducer,
-      contacts: contactsReducer
+      contacts: contactsReducer,
+      transfers: transferReducer,
+      appointments: appointmentReducer
     }, {
       metaReducers
     }),
@@ -68,7 +74,9 @@ const metaReducers: Array<MetaReducer<any, any>> = []; // [localStorageSyncReduc
     EffectsModule.forRoot([
       CardEffects,
       MovementEffects,
-      ContactEffects
+      ContactEffects,
+      TransferEffects,
+      AppointmentEffects
     ])
   ],
   providers: [

@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, FormGroupDirective, Validators} from "@angular/forms";
-import {CardService} from "../../api/card.service";
-import {Card} from "../../models/card";
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {FormBuilder, FormGroup, NgForm, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
-import {filter} from "rxjs";
+import {filter, Subscription} from "rxjs";
 import {ContactComponent} from "./contact/contact.component";
 import {Contact} from "../../models/contact";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
-import {TransferService} from "../../api/transfer.service";
-import {TransferForm} from "../../models/transfer";
+import {Transfer} from "../../models/transfer";
 import {TransferValidator} from "./transfer.validator";
+import {Store} from "@ngrx/store";
+import {selectCards} from "../../store/card/card.selectors";
+import {Actions, ofType} from "@ngrx/effects";
+import {insertTransfer, insertTransferSuccess} from "../../store/transfer/transfer.actions";
+import {getCards} from "../../store/card/card.actions";
 
 @Component({
   selector: 'ng-transfer',
@@ -27,7 +29,7 @@ import {TransferValidator} from "./transfer.validator";
         >{{ 'transfer.contact.contacts' | translate }}
         </button>
 
-        <form [formGroup]="transferForm" #formDirective="ngForm" (ngSubmit)="doTransfer(formDirective)">
+        <form [formGroup]="transferForm" #formDirective="ngForm" (ngSubmit)="doTransfer()">
 
           <ng-container formGroupName="contact">
 
@@ -98,7 +100,7 @@ import {TransferValidator} from "./transfer.validator";
                 formControlName="card"
               >
                 <mat-option
-                  *ngFor="let card of cards"
+                  *ngFor="let card of cards$ | async"
                   [value]="card._id"
                 >
                   {{ card.number | mask: '0000 0000 0000 0000' }}
@@ -153,9 +155,12 @@ import {TransferValidator} from "./transfer.validator";
 
   `]
 })
-export class TransferComponent implements OnInit {
+export class TransferComponent implements OnInit, OnDestroy {
 
-  cards: Card[] = [];
+  @ViewChild('formDirective') fd!: NgForm;
+
+  cards$ = this.store.select(selectCards);
+  actionsSubscriptions = new Subscription();
 
   transferForm = this.fb.group({
     contact: this.fb.group({
@@ -171,18 +176,6 @@ export class TransferComponent implements OnInit {
     })
   });
 
-  constructor(private fb: FormBuilder,
-              private cardService: CardService,
-              private transferService: TransferService,
-              private dialog: MatDialog,
-              private snackBar: MatSnackBar,
-              private translate: TranslateService,
-              private transferValidator: TransferValidator) {}
-
-  ngOnInit(): void {
-    this.getCards();
-  }
-
   get contact(): FormGroup {
     return this.transferForm.get('contact') as FormGroup;
   }
@@ -191,11 +184,39 @@ export class TransferComponent implements OnInit {
     return this.transferForm.get('transfer') as FormGroup;
   }
 
-  getCards(): void {
-    this.cardService.list()
-      .subscribe(cards => {
-        this.cards = cards;
-      });
+  constructor(public store: Store,
+              private fb: FormBuilder,
+              private actionListener$: Actions,
+              private dialog: MatDialog,
+              private snackBar: MatSnackBar,
+              private translate: TranslateService,
+              private transferValidator: TransferValidator) {}
+
+  ngOnInit(): void {
+    this.store.dispatch(getCards());
+    this.addInsertTransferHook();
+  }
+
+  ngOnDestroy() {
+    this.actionsSubscriptions.unsubscribe();
+  }
+
+  addInsertTransferHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(insertTransferSuccess),
+      ).subscribe(() => {
+        // conferma utente...
+        this.snackBar.open(
+          this.translate.instant('transfer.transferDone'),
+          undefined,
+          {duration: 3000, panelClass: ['sb-success']}
+        );
+        // pulizia form...
+        this.fd.resetForm();
+        this.transferForm.reset();
+      })
+    );
   }
 
   selectContact() {
@@ -218,31 +239,15 @@ export class TransferComponent implements OnInit {
       });
   }
 
-  doTransfer(fd: FormGroupDirective) {
-    // console.log(this.transferForm.value);
-    const tf: TransferForm = {
+  doTransfer() {
+    const tf: Transfer = {
       name: this.contact.get('name')!.value,
       surname: this.contact.get('surname')!.value,
       iban: this.contact.get('iban')!.value,
       amount: this.transfer.get('amount')!.value,
       cardId: this.transfer.get('card')!.value
     }
-    this.transferService.transfer(tf)
-      .subscribe(ret => {
-        if (ret) {
-          // conferma utente...
-          this.snackBar.open(
-            this.translate.instant('transfer.transferDone'),
-            undefined,
-            {duration: 3000, panelClass: ['sb-success']}
-          );
-        } else {
-          // TODO: gestire errore...
-        }
-        // pulizia form...
-        fd.resetForm();
-        this.transferForm.reset();
-      })
+    this.store.dispatch(insertTransfer({transfer: tf}));
   }
 
 }

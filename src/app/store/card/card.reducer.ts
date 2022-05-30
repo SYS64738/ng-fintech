@@ -12,24 +12,9 @@ const initialState: CardsState = {
 
 export const cardsReducer = createReducer(
   initialState,
-  on(CardActions.getCardsSuccess, (state, action) => {
-    return {
-      ...state,
-      cards: action.cards
-    }
-  }),
-  on(CardActions.insertCardSuccess, (state, action) => {
-    return {
-      ...state,
-      cards: [...state.cards, action.card]
-    }
-  }),
-  on(CardActions.deleteCardSuccess, (state, action) => {
-    return {
-      ...state,
-      cards: state.cards.filter(c => c._id !== action.id)
-    }
-  }),
+  on(CardActions.getCardsSuccess, (state, action) => ({...state, cards: action.cards })),
+  on(CardActions.insertCardSuccess, (state, action) => ({...state, cards: [...state.cards, action.card] })),
+  on(CardActions.deleteCardSuccess, (state, action) => ({...state, cards: state.cards.filter(c => c._id !== action.id)})),
 );
 
 export const cardsFeature = createFeature({

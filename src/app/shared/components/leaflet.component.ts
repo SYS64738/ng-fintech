@@ -1,8 +1,7 @@
-import {ChangeDetectorRef, Component, ElementRef, Input, OnChanges, OnInit, SimpleChanges,
+import {ChangeDetectorRef, Component, ElementRef, Input, OnChanges, SimpleChanges,
   ViewChild
 } from "@angular/core";
 import * as L from 'leaflet';
-import {of} from "rxjs";
 
 @Component({
   selector: 'ng-leaflet',
@@ -65,7 +64,8 @@ export class LeafletComponent implements OnChanges {
     }
 
     // workaround per far si che la mappa venga renderizzata a dovere (cfr. onResize)...
-    window.dispatchEvent(new Event('resize'));
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+
   }
 
   onResize() {

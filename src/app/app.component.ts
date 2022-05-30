@@ -73,7 +73,7 @@ export class AppComponent implements OnInit {
 
   goToHome = () => this.router.navigateByUrl('homepage');
 
-  setTitle = (url: string) => this.title = `${url !== '/' ? url.substring(1) : 'login'}.menu`;
+  setTitle = (url: string) => this.title = `${url !== '/' ? url.substring(1).split('/')[0] : 'login'}.menu`;
 
   useTheme = (theme: string) => this.themeService.setTheme(theme);
 

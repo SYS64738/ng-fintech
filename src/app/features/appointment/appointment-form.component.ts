@@ -104,8 +104,10 @@ function dateToString(d: Date): string {
     month = '0' + month;
   }
   */
+  /*
   if (day.length < 2) {
     day = '0' + day;
   }
+  */
   return [month, day, year].join('/');
 }

@@ -1,13 +1,23 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatSidenav} from "@angular/material/sidenav";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {MatDialog} from "@angular/material/dialog";
 import {AppointmentService} from "../../api/appointment.service";
-import {DayWithSlot, DayWithSlots, Location} from "../../models/appointment";
+import {DayWithSlot, Location} from "../../models/appointment";
 import {AppointmentFormComponent} from "./appointment-form.component";
 import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog.component";
-import {filter} from "rxjs";
+import {filter, Observable, Subscription} from "rxjs";
+import {Store} from "@ngrx/store";
+import {selectLocations, selectedLocation, selectDayWithSlots} from "../../store/appointment/appointment.selectors";
+import {
+  getLocations,
+  getLocationSlots,
+  getLocationSlotsSuccess, schedule,
+  scheduleSuccess
+} from "../../store/appointment/appointment.actions";
+import {Actions, ofType} from "@ngrx/effects";
+
 
 @Component({
   selector: 'ng-appointment',
@@ -16,23 +26,23 @@ import {filter} from "rxjs";
 
       <mat-sidenav-container autosize style="height: 100%">
         <mat-sidenav #sidenav mode="side" opened="false" position="end">
-          <div *ngIf="selectedLocation"
+          <div *ngIf="(selectedLocation$ | async) as l"
                class="container"
           >
             <ng-leaflet
-              [location]="selectedLocation.name"
-              [coords]="selectedLocation.coords"
+              [location]="l.name"
+              [coords]="l.coords"
             ></ng-leaflet>
           </div>
           <ng-appointmentform
-            [slots]="locationSlots"
+            [slots]="(locationsSlot$ | async) ?? []"
             (select)="confirmAppointment($event)"
             (cancel)="cleanUp()"
           ></ng-appointmentform>
         </mat-sidenav>
         <div>
           <ng-locationlist
-            [locations]="locations"
+            [locations]="(locations$ | async) ?? []"
             (select)="newAppointment($event)"
           ></ng-locationlist>
         </div>
@@ -54,43 +64,66 @@ import {filter} from "rxjs";
 
   `]
 })
-export class AppointmentComponent implements OnInit {
+export class AppointmentComponent implements OnInit, OnDestroy {
 
   @ViewChild('sidenav') sidenav!: MatSidenav;
   @ViewChild(AppointmentFormComponent) appointmentForm!: AppointmentFormComponent;
 
-  locations: Location[] = [];
-  locationSlots: DayWithSlots[] = [];
-  selectedLocation: Location | null = null;
+  locations$ = this.store.select(selectLocations);
+  locationsSlot$ = this.store.select(selectDayWithSlots);
+  selectedLocation$: Observable<Location | undefined> | null = null;
 
-  constructor(private appointmentService: AppointmentService,
+  actionsSubscriptions = new Subscription();
+
+  constructor(public store: Store,
+              private actionListener$: Actions,
+              private appointmentService: AppointmentService,
               private snackBar: MatSnackBar,
               private translate: TranslateService,
               private dialog: MatDialog) {}
 
   ngOnInit() {
-    this.getLocations();
+    this.addGetLocationSlotsHook();
+    this.addScheduleHook();
+    this.store.dispatch(getLocations());
   }
 
-  getLocations() {
-    this.appointmentService.getLocations()
-      .subscribe(locations => {
-        this.locations = locations;
-      });
+  ngOnDestroy() {
+    this.actionsSubscriptions.unsubscribe();
   }
 
-  getLocationSlot(locationId: string) {
-    this.appointmentService.getLocationSlots(locationId)
-      .subscribe(locationSlots => {
-        this.locationSlots = locationSlots;
-      });
+  addGetLocationSlotsHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(getLocationSlotsSuccess),
+      ).subscribe(() => {
+        // pulizia...
+        this.appointmentForm.cleanUp();
+        this.sidenav.open();
+      })
+    );
+  }
+
+  addScheduleHook() {
+    this.actionsSubscriptions.add(
+      this.actionListener$.pipe(
+        ofType(scheduleSuccess),
+      ).subscribe(() => {
+        // pulizia...
+        this.cleanUp();
+        // conferma utente...
+        this.snackBar.open(
+          this.translate.instant('appointment.confirmed'),
+          undefined,
+          {duration: 3000, panelClass: ['sb-success']}
+        );
+      })
+    );
   }
 
   newAppointment(location: Location) {
-    this.selectedLocation = location;
-    this.getLocationSlot(this.selectedLocation._id);
-    this.appointmentForm.cleanUp();
-    this.sidenav.open();
+    this.store.dispatch(getLocationSlots({ locationId: location._id }));
+    this.selectedLocation$ = this.store.select(selectedLocation(location._id));
   }
 
   confirmAppointment(dayWithSlot: DayWithSlot) {
@@ -107,18 +140,7 @@ export class AppointmentComponent implements OnInit {
         filter(dialogResult => dialogResult)
       )
       .subscribe(() => {
-        this.appointmentService.schedule(dayWithSlot)
-          .pipe(
-            filter(result => result)
-          )
-          .subscribe(() => {
-            // conferma utente...
-            this.snackBar.open(
-              this.translate.instant('appointment.confirmed'),
-              undefined,
-              {duration: 3000, panelClass: ['sb-success']}
-            );
-          })
+        this.store.dispatch(schedule({ dayWithSlot }));
       });
   }
 
