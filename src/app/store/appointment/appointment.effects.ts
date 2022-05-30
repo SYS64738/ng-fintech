@@ -5,7 +5,6 @@ import {AppointmentService} from "../../api/appointment.service";
 import * as AppointmentActions from "./appointment.actions";
 import {catchError, exhaustMap, of, switchMap} from "rxjs";
 import {map} from "rxjs/operators";
-import {getLocationSlotsFail} from "./appointment.actions";
 
 @Injectable()
 export class AppointmentEffects {
