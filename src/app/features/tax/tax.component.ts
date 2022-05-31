@@ -9,7 +9,7 @@ import {
   startWith,
   Subscription,
   switchMap,
-  tap
+  tap, withLatestFrom
 } from "rxjs";
 import {Store} from "@ngrx/store";
 import {Actions, ofType} from "@ngrx/effects";
@@ -23,7 +23,7 @@ import {getCards} from "../../store/card/card.actions";
 import {map} from "rxjs/operators";
 import {getCities} from "../../store/city/city.actions";
 import {
-  selectCities,
+  selectCities, selectCitiesByDistrict,
   selectFilteredCities,
   selectFilteredDistrict
 } from "../../store/city/city.selectors";
@@ -528,14 +528,15 @@ export class TaxComponent implements OnInit, OnDestroy {
     this.store.dispatch(getCards());
     this.store.dispatch(getCities());
     this.addInsertF24Hook();
-    // TODO: gestire filtro reciproco con provincia (cfr. selector)...
+
+    // TODO: fixare filtro reciproco con provincia: ora funziona solo al successivo editing del comune...
+
     this.filteredDistricts$ = this.taxPayer!.get('birthDistrict')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
       switchMap(filter => this.store.select(selectFilteredDistrict(filter)).pipe(
         tap(items => {
-          // this.taxPayer!.get('birthCity')!.reset('');
           if (items.length < 4) {
             this.districtViewPortHeight = (items.length * 50);
           } else {
@@ -548,7 +549,8 @@ export class TaxComponent implements OnInit, OnDestroy {
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
-      switchMap(filter => this.store.select(selectFilteredCities(filter)).pipe(
+      tap(() => console.log('District: ' + this.taxPayer!.get('birthDistrict')!.value)),
+      switchMap(filter => this.store.select(selectCitiesByDistrict(this.taxPayer!.get('birthDistrict')!.value, filter)).pipe(
         tap(items => {
           if (items.length < 4) {
             this.cityViewPortHeight = (items.length * 50);
@@ -558,6 +560,7 @@ export class TaxComponent implements OnInit, OnDestroy {
         })
       ))
     );
+
   }
 
   ngOnDestroy() {
