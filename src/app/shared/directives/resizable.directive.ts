@@ -1,7 +1,7 @@
 import {Directive, HostBinding, HostListener, Input, OnInit} from '@angular/core';
 
 @Directive({
-  selector: '[resizable]'
+  selector: 'div[resizable]'
 })
 export class ResizableDirective implements OnInit {
 
@@ -10,6 +10,7 @@ export class ResizableDirective implements OnInit {
   @HostBinding('style.height.px') height: number | undefined;
   @HostBinding('style.margin') margin: string = 'auto';
   @HostBinding('style.width') width: string = '100%';
+
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
     this.height = event.target.innerHeight - this.offset;

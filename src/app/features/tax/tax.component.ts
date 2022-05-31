@@ -24,11 +24,9 @@ import {map} from "rxjs/operators";
 import {getCities} from "../../store/city/city.actions";
 import {
   selectCities,
-  selectCitiesByDistrict,
   selectFilteredCities,
   selectFilteredDistrict
 } from "../../store/city/city.selectors";
-import {Comune} from "../../models/city";
 
 @Component({
   selector: 'ng-tax',
@@ -407,9 +405,9 @@ import {Comune} from "../../models/city";
 
         </form>
 
-
+        <!--
         {{ taxForm.value | json }}
-
+        -->
 
       </div>
     </div>
