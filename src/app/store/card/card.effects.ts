@@ -25,7 +25,7 @@ export class CardEffects {
     ofType(CardActions.insertCard),
     mergeMap(action => this.cardService.insert(action.cardForm).pipe(
       map(card => CardActions.insertCardSuccess({ card })),
-      catchError(() => of(CardActions.insertCardFail))
+      catchError(() => of(CardActions.insertCardFail()))
     ))
   ))
 
@@ -33,7 +33,7 @@ export class CardEffects {
     ofType(CardActions.deleteCard),
     mergeMap(action => this.cardService.delete(action.id).pipe(
       map(() => CardActions.deleteCardSuccess({ id: action.id })),
-      catchError(() => of(CardActions.deleteCardFail))
+      catchError(() => of(CardActions.deleteCardFail()))
     ))
   ))
 

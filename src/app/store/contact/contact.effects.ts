@@ -18,7 +18,7 @@ export class ContactEffects {
     ofType(ContactActions.getContacts),
     switchMap(() => this.contactService.list().pipe(
       map(contacts => ContactActions.getContactsSuccess({contacts})),
-      catchError(() => of(ContactActions.getContactsFail))
+      catchError(() => of(ContactActions.getContactsFail()))
     ))
   ));
 
@@ -26,7 +26,7 @@ export class ContactEffects {
     ofType(ContactActions.insertContact),
     mergeMap((action ) => this.contactService.insert(action.contactForm).pipe(
       map(contact => ContactActions.insertContactSuccess( { contact })),
-      catchError(() => of(ContactActions.insertContactFail))
+      catchError(() => of(ContactActions.insertContactFail()))
     ))
   ));
 
@@ -34,7 +34,7 @@ export class ContactEffects {
     ofType(ContactActions.updateContact),
     mergeMap(action => this.contactService.update(action.id, action.contactForm).pipe(
       map(contact => ContactActions.updateContactSuccess( { contact })),
-      catchError(() => of(ContactActions.updateContactFail))
+      catchError(() => of(ContactActions.updateContactFail()))
     ))
   ));
 
@@ -42,7 +42,7 @@ export class ContactEffects {
    ofType(ContactActions.deleteContact),
    mergeMap(action => this.contactService.delete(action.id).pipe(
      map(() => ContactActions.deleteContactSuccess( { id: action.id })),
-     catchError(() => of(ContactActions.deleteContactFail))
+     catchError(() => of(ContactActions.deleteContactFail()))
    ))
   ))
 

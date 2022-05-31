@@ -24,6 +24,10 @@ import {TransferEffects} from "./store/transfer/transfer.effects";
 import {transferReducer} from "./store/transfer/transfer.reducer";
 import {AppointmentEffects} from "./store/appointment/appointment.effects";
 import {appointmentReducer} from "./store/appointment/appointment.reducer";
+import {taxesReducer} from "./store/tax/tax.reducer";
+import {TaxEffects} from "./store/tax/tax.effects";
+import {CityEffects} from "./store/city/city.effects";
+import {citiesReducer} from "./store/city/city.reducer";
 
 /*
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -64,7 +68,9 @@ const metaReducers: Array<MetaReducer<any, any>> = []; // [localStorageSyncReduc
       movements: movementsReducer,
       contacts: contactsReducer,
       transfers: transferReducer,
-      appointments: appointmentReducer
+      appointments: appointmentReducer,
+      taxes: taxesReducer,
+      cities: citiesReducer
     }, {
       metaReducers
     }),
@@ -76,7 +82,9 @@ const metaReducers: Array<MetaReducer<any, any>> = []; // [localStorageSyncReduc
       MovementEffects,
       ContactEffects,
       TransferEffects,
-      AppointmentEffects
+      AppointmentEffects,
+      TaxEffects,
+      CityEffects
     ])
   ],
   providers: [

@@ -3,7 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {Card, CardForm} from "../models/card";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
-import {Movement, MovementList} from "../models/movement";
+import {MovementList} from "../models/movement";
 
 @Injectable({
   providedIn: 'root'

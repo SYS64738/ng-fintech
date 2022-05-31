@@ -9,7 +9,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDialogComponent} from "../../shared/components/confirm-dialog.component";
 import {filter, Subscription, take} from "rxjs";
 import {Router} from "@angular/router";
-import {ActionsSubject, Store} from "@ngrx/store";
+import {Store} from "@ngrx/store";
 import {existsCard, selectCards} from "../../store/card/card.selectors";
 import {insertCard, insertCardSuccess, getCards, deleteCard, deleteCardSuccess} from "../../store/card/card.actions";
 import {Actions, ofType} from "@ngrx/effects";

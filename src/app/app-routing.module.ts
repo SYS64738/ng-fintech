@@ -28,6 +28,10 @@ const routes: Routes = [
     loadChildren: () => import('./features/appointment/appointment.module').then(m => m.AppointmentModule),
     canActivate: [AuthGuard]
   },
+  { path: 'tax',
+    loadChildren: () => import('./features/tax/tax.module').then(m => m.TaxModule),
+    canActivate: [AuthGuard]
+  },
   { path: 'login',
     loadChildren: () => import('./features/login/login.module').then(m => m.LoginModule)
   },
