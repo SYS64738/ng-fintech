@@ -10,6 +10,7 @@ import {Subscription} from "rxjs";
 import {DateAdapter} from "@angular/material/core";
 import {TaxComponent} from "./tax.component";
 import {SelectCardDialogComponent} from "./select-card-dialog.component";
+import {CdkVirtualScrollViewport, ScrollingModule} from "@angular/cdk/scrolling";
 
 const routes: Routes = [
   {
@@ -29,6 +30,7 @@ const routes: Routes = [
     NgxMaskModule,
     ReactiveFormsModule,
     RouterModule.forChild(routes),
+    ScrollingModule,
     SharedModule,
     TranslateModule.forChild(),
   ]

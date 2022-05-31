@@ -9,7 +9,7 @@ import {
   startWith,
   Subscription,
   switchMap,
-  take
+  tap
 } from "rxjs";
 import {Store} from "@ngrx/store";
 import {Actions, ofType} from "@ngrx/effects";
@@ -22,7 +22,12 @@ import {SelectCardDialogComponent} from "./select-card-dialog.component";
 import {getCards} from "../../store/card/card.actions";
 import {map} from "rxjs/operators";
 import {getCities} from "../../store/city/city.actions";
-import {selectCities, selectFilteredCities} from "../../store/city/city.selectors";
+import {
+  selectCities,
+  selectCitiesByDistrict,
+  selectFilteredCities,
+  selectFilteredDistrict
+} from "../../store/city/city.selectors";
 import {Comune} from "../../models/city";
 
 @Component({
@@ -111,7 +116,18 @@ import {Comune} from "../../models/city";
                 matInput
                 autocomplete="off"
                 placeholder="{{ 'tax.birthDistrict' | translate }}"
+                [matAutocomplete]="autoDistrict"
               >
+              <mat-autocomplete #autoDistrict="matAutocomplete" [displayWith]="displayFn">
+                <cdk-virtual-scroll-viewport
+                  itemSize="25"
+                  [style.height.px]="districtViewPortHeight"
+                >
+                  <mat-option *cdkVirtualFor="let district of filteredDistricts$ | async" [value]="district">
+                    {{ district }}
+                  </mat-option>
+                </cdk-virtual-scroll-viewport>
+              </mat-autocomplete>
               <mat-error>
                 {{ 'tax.birthDistrictRequired' | translate }}
               </mat-error>
@@ -124,12 +140,22 @@ import {Comune} from "../../models/city";
                 matInput
                 autocomplete="off"
                 placeholder="{{ 'tax.birthCity' | translate }}"
-                [matAutocomplete]="auto"
+                [matAutocomplete]="autoCity"
               >
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+              <mat-autocomplete #autoCity="matAutocomplete" [displayWith]="displayFn">
+                <!-- sostituito con virtual scroll, per migliorare le performance...
                 <mat-option *ngFor="let city of filteredCities | async" [value]="city">
                   {{ city.nome }}
                 </mat-option>
+                -->
+                <cdk-virtual-scroll-viewport
+                  itemSize="25"
+                  [style.height.px]="cityViewPortHeight"
+                >
+                  <mat-option *cdkVirtualFor="let city of filteredCities$ | async" [value]="city">
+                    {{ city }}
+                  </mat-option>
+                </cdk-virtual-scroll-viewport>
               </mat-autocomplete>
               <mat-error>
                 {{ 'tax.birthCityRequired' | translate }}
@@ -214,8 +240,10 @@ import {Comune} from "../../models/city";
             </div>
 
             <div class="item-total" *ngIf="taxAuthorities.length > 0">
-              <h3 style="width: 50%">{{ 'tax.totalTaxAuthorityDebit' | translate}}: {{ 'currency' | translate }} {{ totalTaxAuthorityDebit$ | async }}</h3>
-              <h3 style="width: 50%">{{ 'tax.totalTaxAuthorityCredit' | translate}}: {{ 'currency' | translate }} {{ totalTaxAuthorityCredit$ | async }}</h3>
+              <h3 style="width: 50%">{{ 'tax.totalTaxAuthorityDebit' | translate}}
+                : {{ 'currency' | translate }} {{ totalTaxAuthorityDebit$ | async }}</h3>
+              <h3 style="width: 50%">{{ 'tax.totalTaxAuthorityCredit' | translate}}
+                : {{ 'currency' | translate }} {{ totalTaxAuthorityCredit$ | async }}</h3>
             </div>
 
             <button
@@ -349,8 +377,10 @@ import {Comune} from "../../models/city";
             </div>
 
             <div class="item-total" *ngIf="inps.length > 0">
-              <h3 style="width: 50%">{{ 'tax.totalInpsDebit' | translate}}: {{ 'currency' | translate }} {{ totalInpsDebit$ | async }}</h3>
-              <h3 style="width: 50%">{{ 'tax.totalInpsCredit' | translate}}: {{ 'currency' | translate }} {{ totalInpsCredit$ | async }}</h3>
+              <h3 style="width: 50%">{{ 'tax.totalInpsDebit' | translate}}
+                : {{ 'currency' | translate }} {{ totalInpsDebit$ | async }}</h3>
+              <h3 style="width: 50%">{{ 'tax.totalInpsCredit' | translate}}
+                : {{ 'currency' | translate }} {{ totalInpsCredit$ | async }}</h3>
             </div>
 
             <button
@@ -377,9 +407,9 @@ import {Comune} from "../../models/city";
 
         </form>
 
-        <!--
+
         {{ taxForm.value | json }}
-        -->
+
 
       </div>
     </div>
@@ -424,9 +454,12 @@ export class TaxComponent implements OnInit, OnDestroy {
 
   cards$ = this.store.select(selectCards);
   cities$ = this.store.select(selectCities);
-  filteredCities: Observable<Comune[]> | null = null;
-  actionsSubscriptions = new Subscription();
+  filteredCities$: Observable<string[]> | null = null;
+  filteredDistricts$: Observable<string[]> | null = null;
+  cityViewPortHeight: number = 200;
+  districtViewPortHeight: number = 200;
 
+  actionsSubscriptions = new Subscription();
   currentDate = new Date();
   currentYear: number = this.currentDate.getFullYear();
 
@@ -489,13 +522,35 @@ export class TaxComponent implements OnInit, OnDestroy {
     this.store.dispatch(getCards());
     this.store.dispatch(getCities());
     this.addInsertF24Hook();
-    this.filteredCities = this.taxPayer!.get('birthCity')!.valueChanges.pipe(
+    // TODO: gestire filtro reciproco con provincia (cfr. selector)...
+    this.filteredDistricts$ = this.taxPayer!.get('birthDistrict')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
-      map(value => (typeof value === 'string' ? value : value.nome)),
       distinctUntilChanged(),
-      // filter(value => value.length > 3),
-      switchMap(filter => this.store.select(selectFilteredCities(filter)))
+      switchMap(filter => this.store.select(selectFilteredDistrict(filter)).pipe(
+        tap(items => {
+          // this.taxPayer!.get('birthCity')!.reset('');
+          if (items.length < 4) {
+            this.districtViewPortHeight = (items.length * 50);
+          } else {
+            this.districtViewPortHeight = 200;
+          }
+        })
+      ))
+    );
+    this.filteredCities$ = this.taxPayer!.get('birthCity')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      distinctUntilChanged(),
+      switchMap(filter => this.store.select(selectFilteredCities(filter)).pipe(
+        tap(items => {
+          if (items.length < 4) {
+            this.cityViewPortHeight = (items.length * 50);
+          } else {
+            this.cityViewPortHeight = 200;
+          }
+        })
+      ))
     );
   }
 
@@ -503,9 +558,7 @@ export class TaxComponent implements OnInit, OnDestroy {
     this.actionsSubscriptions.unsubscribe();
   }
 
-  displayFn(city: Comune): string {
-    return city && city.nome ? city.nome : '';
-  }
+  displayFn = (value: string) => value;
 
   addInsertF24Hook() {
     this.actionsSubscriptions.add(
