@@ -1,6 +1,16 @@
 import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {FormArray, FormBuilder, NgForm, Validators} from "@angular/forms";
-import {combineLatest, filter, startWith, Subscription, take} from "rxjs";
+import {
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  startWith,
+  Subscription,
+  switchMap,
+  take
+} from "rxjs";
 import {Store} from "@ngrx/store";
 import {Actions, ofType} from "@ngrx/effects";
 import {insertF24, insertF24Success} from "../../store/tax/tax.actions";
@@ -11,9 +21,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {SelectCardDialogComponent} from "./select-card-dialog.component";
 import {getCards} from "../../store/card/card.actions";
 import {map} from "rxjs/operators";
-import {CityService} from "../../api/city.service";
 import {getCities} from "../../store/city/city.actions";
-import {selectCities} from "../../store/city/city.selectors";
+import {selectCities, selectFilteredCities} from "../../store/city/city.selectors";
+import {Comune} from "../../models/city";
 
 @Component({
   selector: 'ng-tax',
@@ -114,7 +124,13 @@ import {selectCities} from "../../store/city/city.selectors";
                 matInput
                 autocomplete="off"
                 placeholder="{{ 'tax.birthCity' | translate }}"
+                [matAutocomplete]="auto"
               >
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                <mat-option *ngFor="let city of filteredCities | async" [value]="city">
+                  {{ city.nome }}
+                </mat-option>
+              </mat-autocomplete>
               <mat-error>
                 {{ 'tax.birthCityRequired' | translate }}
               </mat-error>
@@ -408,6 +424,7 @@ export class TaxComponent implements OnInit, OnDestroy {
 
   cards$ = this.store.select(selectCards);
   cities$ = this.store.select(selectCities);
+  filteredCities: Observable<Comune[]> | null = null;
   actionsSubscriptions = new Subscription();
 
   currentDate = new Date();
@@ -472,10 +489,22 @@ export class TaxComponent implements OnInit, OnDestroy {
     this.store.dispatch(getCards());
     this.store.dispatch(getCities());
     this.addInsertF24Hook();
+    this.filteredCities = this.taxPayer!.get('birthCity')!.valueChanges.pipe(
+      startWith(''),
+      debounceTime(100),
+      map(value => (typeof value === 'string' ? value : value.nome)),
+      distinctUntilChanged(),
+      // filter(value => value.length > 3),
+      switchMap(filter => this.store.select(selectFilteredCities(filter)))
+    );
   }
 
   ngOnDestroy() {
     this.actionsSubscriptions.unsubscribe();
+  }
+
+  displayFn(city: Comune): string {
+    return city && city.nome ? city.nome : '';
   }
 
   addInsertF24Hook() {
