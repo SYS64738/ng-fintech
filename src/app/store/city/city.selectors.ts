@@ -9,7 +9,7 @@ export const selectFilteredCities = (name: string) => createSelector(
   selectCities,
   (state) => state
     .map(c => c.nome)
-    .filter(c => c.toLowerCase().includes(name.toLowerCase()))
+    .filter(c => name ? c.toLowerCase().includes(name.toLowerCase()) : true)
 )
 
 export const selectFilteredDistrict = (name: string) => createSelector(
@@ -17,7 +17,7 @@ export const selectFilteredDistrict = (name: string) => createSelector(
   (state) => {
     const unique = [...new Set(state.map(c => c.provincia.nome))];
     return unique
-      .filter(d => d.toLowerCase().includes(name.toLowerCase()))
+      .filter(d => name ? d.toLowerCase().includes(name.toLowerCase()) : true)
       .sort();
   }
 )

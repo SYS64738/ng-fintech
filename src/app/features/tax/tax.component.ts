@@ -202,6 +202,7 @@ import {
                   mask="separator.2"
                   prefix="{{ 'currency' | translate }} "
                   thousandSeparator="."
+                  decimalMarker=","
                 >
                 <mat-error>
                   {{ 'tax.debitRequired' | translate }}
@@ -218,6 +219,7 @@ import {
                   mask="separator.2"
                   prefix="{{ 'currency' | translate }} "
                   thousandSeparator="."
+                  decimalMarker=","
                 >
                 <mat-error>
                   {{ 'tax.creditRequired' | translate }}
@@ -339,6 +341,7 @@ import {
                   mask="separator.2"
                   prefix="{{ 'currency' | translate }} "
                   thousandSeparator="."
+                  decimalMarker=","
                 >
                 <mat-error>
                   {{ 'tax.debitRequired' | translate }}
@@ -355,6 +358,7 @@ import {
                   mask="separator.2"
                   prefix="{{ 'currency' | translate }} "
                   thousandSeparator="."
+                  decimalMarker=","
                 >
                 <mat-error>
                   {{ 'tax.creditRequired' | translate }}
@@ -398,7 +402,7 @@ import {
           <button
             mat-raised-button
             class="button"
-            color="accent"
+            color="primary"
             [disabled]="!taxForm.valid || taxAuthorities.length === 0 || inps.length === 0"
           >{{ 'tax.send' | translate }}
           </button>
@@ -477,15 +481,19 @@ export class TaxComponent implements OnInit, OnDestroy {
 
   totalTaxAuthorityDebit$ = this.taxForm.valueChanges.pipe(
     map(form => this.computeFieldTotal(form.taxAuthorities, 'debit')),
+    startWith(0)
   )
   totalTaxAuthorityCredit$ = this.taxForm.valueChanges.pipe(
     map(form => this.computeFieldTotal(form.taxAuthorities, 'credit')),
+    startWith(0)
   )
   totalInpsDebit$ = this.taxForm.valueChanges.pipe(
     map(form => this.computeFieldTotal(form.inps, 'debit')),
+    startWith(0)
   )
   totalInpsCredit$ = this.taxForm.valueChanges.pipe(
     map(form => this.computeFieldTotal(form.inps, 'credit')),
+    startWith(0)
   )
   grandTotal$ = combineLatest([
     this.totalTaxAuthorityCredit$,
@@ -570,6 +578,8 @@ export class TaxComponent implements OnInit, OnDestroy {
           {duration: 3000, panelClass: ['sb-success']}
         );
         // pulizia form...
+        this.taxAuthorities.clear();
+        this.inps.clear();
         this.fd.resetForm();
         this.taxForm.reset();
       })

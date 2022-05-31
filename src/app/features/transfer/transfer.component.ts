@@ -88,6 +88,7 @@ import {getCards} from "../../store/card/card.actions";
                 mask="separator.2"
                 prefix="{{ 'currency' | translate }} "
                 thousandSeparator="."
+                decimalMarker=","
               >
               <mat-error>
                 {{ 'transfer.amountRequired' | translate }}

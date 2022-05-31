@@ -1,7 +1,6 @@
 import {Injectable} from "@angular/core";
-import {TransferService} from "../../api/transfer.service";
 import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors} from "@angular/forms";
-import {filter, Observable, tap} from "rxjs";
+import {Observable} from "rxjs";
 import {CardService} from "../../api/card.service";
 import {map} from "rxjs/operators";
 
