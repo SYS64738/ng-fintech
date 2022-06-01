@@ -104,7 +104,7 @@ import {getCards} from "../../store/card/card.actions";
                   *ngFor="let card of cards$ | async"
                   [value]="card._id"
                 >
-                  {{ card.number | mask: '0000 0000 0000 0000' }}
+                  {{ card.number | mask: '0000 0000 0000 0000' }} - {{ card.surname }} {{ card.name }}
                 </mat-option>
               </mat-select>
             </mat-form-field>

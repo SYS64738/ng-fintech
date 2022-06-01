@@ -2,7 +2,7 @@
 <mat-toolbar class="mat-elevation-z6" color="primary">
 
   <button
-    *ngIf="!loginPage && (userStore.user$ | async)"
+    *ngIf="userStore.user$ | async"
     mat-icon-button class="app-menu-button"
     (click)="goToHome()"
   >
@@ -13,7 +13,7 @@
   </button>
 
   <button
-    *ngIf="!loginPage && (userStore.user$ | async)"
+    *ngIf="userStore.user$ | async"
     mat-button class="app-menu-button"
     (click)="sidenav.toggle()"
   >
@@ -29,7 +29,7 @@
 
   <span class="flex-space"></span>
 
-  <button mat-button class="mat-button " [matMenuTriggerFor]="userMenu" *ngIf="!loginPage && (userStore.user$ | async)">
+  <button mat-button class="mat-button " [matMenuTriggerFor]="userMenu" *ngIf="userStore.user$ | async">
     <mat-icon class="material-icons" [style.color]="'#fff'">person</mat-icon>
     <span [style.color]="'#fff'">{{ (userStore.user$ | async)?.displayName }}</span>
     <mat-menu #userMenu="matMenu" xPosition="after">
@@ -61,7 +61,7 @@
   <mat-sidenav #sidenav
                [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
                [mode]="(isHandset$ | async) ? 'over' : 'side'"
-               [opened]="(isHandset$ | async) === false && !loginPage && (userStore.user$ | async) !== null">
+               [opened]="(isHandset$ | async) === false && (userStore.user$ | async) !== null">
       <div class="menu">
         <mat-nav-list>
           <mat-list-item routerLink="card" routerLinkActive="menu-active">

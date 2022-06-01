@@ -6,6 +6,8 @@ export interface Card {
   number: string,
   ownerId: string,
   owner: string,
+  surname: string,
+  name: string,
   type: CardType,
   amount: number
 }

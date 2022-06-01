@@ -27,7 +27,7 @@ import {
               [value]="card._id"
               (click)="cardChange(card._id)"
             >
-              {{ card.number | mask: '0000 0000 0000 0000' }}
+              {{ card.number | mask: '0000 0000 0000 0000' }} - {{ card.surname }} {{ card.name }}
             </mat-option>
           </mat-select>
         </mat-form-field>

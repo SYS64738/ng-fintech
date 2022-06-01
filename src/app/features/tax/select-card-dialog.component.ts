@@ -16,7 +16,7 @@ import {Card} from "../../models/card";
           [value]="card._id"
           (onSelectionChange)="selectedCard = card._id"
         >
-          {{ card.number | mask: '0000 0000 0000 0000' }}
+          {{ card.number | mask: '0000 0000 0000 0000' }} - {{ card.surname }} {{ card.name }}
         </mat-option>
       </mat-select>
     </mat-form-field>
@@ -24,7 +24,14 @@ import {Card} from "../../models/card";
       <button mat-raised-button (click)="onYesClick()" [disabled]="selectedCard === null">{{ 'confirm' | translate}}</button>
       <button mat-raised-button (click)="onNoClick()">{{ 'cancel' | translate}}</button>
     </mat-dialog-actions>
-  `
+  `,
+  styles: [`
+
+    .mat-input-large {
+      width: 100%;
+    }
+
+  `]
 })
 export class SelectCardDialogComponent {
 
