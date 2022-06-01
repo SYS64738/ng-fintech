@@ -54,9 +54,5 @@ export class ContactListComponent {
   @Output() select = new EventEmitter<string>();
   @Output() edit = new EventEmitter<string>();
   @Output() delete = new EventEmitter<string>();
-
-  ngOnInit() {
-    console.log(this.contacts);
-  }
-
+  
 }
