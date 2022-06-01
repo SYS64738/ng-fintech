@@ -1,4 +1,4 @@
-import {AbstractControl, FormGroup, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn} from "@angular/forms";
+import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn} from "@angular/forms";
 import {Directive, Input} from "@angular/core";
 
 export function equalFieldsValidator(fields: string[]): ValidatorFn {
@@ -8,7 +8,7 @@ export function equalFieldsValidator(fields: string[]): ValidatorFn {
       const allEquals = fields.every(f => control.get(f)?.value === control.get(fields[0])?.value);
       if (!allEquals && !someEmpty) {
         return {
-          equalFieldsValidator: true
+          equalFields: true
         }
       }
     }

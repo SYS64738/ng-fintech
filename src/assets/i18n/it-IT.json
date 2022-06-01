@@ -1,6 +1,8 @@
 {
 
   "formatDate": "d/M/y",
+  "invalidDate": "Data non corretta",
+  "invalidRange": "Intervallo date incongruente",
   "currency": "€",
 
   "gotoHome": "Pagina iniziale",
@@ -168,7 +170,9 @@
     "grandTotal": "Saldo",
     "send": "Invia modulo",
     "insertDone": "Modulo inviato con successo",
-    "selectCard": "Seleziona carta per il pagamento"
+    "selectCard": "Seleziona carta per il pagamento",
+    "invalidCity": "Comune non valido",
+    "invalidDistrict": "Provincia non valida"
   }
 
 }

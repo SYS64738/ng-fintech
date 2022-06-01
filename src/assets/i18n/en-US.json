@@ -1,6 +1,8 @@
 {
 
   "formatDate": "M/d/y",
+  "invalidDate": "Invalid date",
+  "invalidRange": "Inconsisten date range",
   "currency": "$",
 
   "gotoHome": "Pagina iniziale",
@@ -168,7 +170,9 @@
     "grandTotal": "Balance",
     "send": "Send module",
     "insertDone": "Module successfully sent",
-    "selectCard": "Select charging card"
+    "selectCard": "Select charging card",
+    "invalidCity": "Invalid city",
+    "invalidDistrict": "Invalid district"
   }
 
 }

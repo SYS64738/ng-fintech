@@ -7,7 +7,7 @@ import {Contact} from "../../models/contact";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TranslateService} from "@ngx-translate/core";
 import {Transfer} from "../../models/transfer";
-import {TransferValidator} from "./transfer.validator";
+import {TransferValidator} from "./validators/transfer.validator";
 import {Store} from "@ngrx/store";
 import {selectCards} from "../../store/card/card.selectors";
 import {Actions, ofType} from "@ngrx/effects";

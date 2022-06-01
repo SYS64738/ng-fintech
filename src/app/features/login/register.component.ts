@@ -117,7 +117,7 @@ import {Credentials} from "../../models/user";
       </mat-form-field>
 
       <mat-error
-        *ngIf="f.hasError('equalFieldsValidator') && f.dirty"
+        *ngIf="f.hasError('equalFields') && f.dirty"
         style="margin-bottom: 10px; font-size: small"
       >
         {{ 'login.passwordNotCorresponding' | translate }}

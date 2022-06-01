@@ -9,7 +9,7 @@ import {
   startWith,
   Subscription,
   switchMap,
-  tap, withLatestFrom
+  tap
 } from "rxjs";
 import {Store} from "@ngrx/store";
 import {Actions, ofType} from "@ngrx/effects";
@@ -23,10 +23,13 @@ import {getCards} from "../../store/card/card.actions";
 import {map} from "rxjs/operators";
 import {getCities} from "../../store/city/city.actions";
 import {
-  selectCities, selectCitiesByDistrict,
+  selectCities,
   selectFilteredCities,
-  selectFilteredDistrict
+  selectFilteredDistricts
 } from "../../store/city/city.selectors";
+import {DistrictValidator} from "./validators/district.validator";
+import {CityValidator} from "./validators/city.validator";
+import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/validators/date-range.validator";
 
 @Component({
   selector: 'ng-tax',
@@ -93,6 +96,9 @@ import {
               <mat-error>
                 {{ 'tax.birthDateRequired' | translate }}
               </mat-error>
+              <mat-error *ngIf="taxPayer!.get('birthDate')?.hasError('matDatepickerParse')">
+                {{ 'invalidDate' | translate }}
+              </mat-error>
             </mat-form-field>
 
             <mat-form-field class="mat-input-large" appearance="fill">
@@ -126,8 +132,11 @@ import {
                   </mat-option>
                 </cdk-virtual-scroll-viewport>
               </mat-autocomplete>
-              <mat-error>
+              <mat-error *ngIf="taxPayer?.get('birthDistrict')?.hasError('required')">
                 {{ 'tax.birthDistrictRequired' | translate }}
+              </mat-error>
+              <mat-error *ngIf="taxPayer?.get('birthDistrict')?.hasError('district')">
+                {{ 'tax.invalidDistrict' | translate }}
               </mat-error>
             </mat-form-field>
 
@@ -155,8 +164,11 @@ import {
                   </mat-option>
                 </cdk-virtual-scroll-viewport>
               </mat-autocomplete>
-              <mat-error>
+              <mat-error *ngIf="taxPayer?.get('birthCity')?.hasError('required')">
                 {{ 'tax.birthCityRequired' | translate }}
+              </mat-error>
+              <mat-error *ngIf="taxPayer?.get('birthCity')?.hasError('city')">
+                {{ 'tax.invalidCity' | translate }}
               </mat-error>
             </mat-form-field>
           </ng-container>
@@ -301,35 +313,53 @@ import {
                 </mat-error>
               </mat-form-field>
 
-              <mat-form-field appearance="fill" style="width: 15%">
-                <mat-label>{{ 'tax.fromDate' | translate }}</mat-label>
-                <input
-                  matInput
-                  formControlName="from"
-                  [matDatepicker]="pickerFrom"
-                  [max]="currentDate"
-                >
-                <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
-                <mat-datepicker #pickerFrom></mat-datepicker>
-                <mat-error>
-                  {{ 'tax.fromDateRequired' | translate }}
-                </mat-error>
-              </mat-form-field>
+              <ng-container formGroupName="dateRange">
 
-              <mat-form-field appearance="fill" style="width: 15%">
-                <mat-label>{{ 'tax.toDate' | translate }}</mat-label>
-                <input
-                  matInput
-                  formControlName="to"
-                  [matDatepicker]="pickerTo"
-                  [max]="currentDate"
-                >
-                <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
-                <mat-datepicker #pickerTo></mat-datepicker>
-                <mat-error>
-                  {{ 'tax.toDateRequired' | translate }}
-                </mat-error>
-              </mat-form-field>
+                <mat-form-field appearance="fill" style="width: 15%">
+                  <mat-label>{{ 'tax.fromDate' | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="from"
+                    [matDatepicker]="pickerFrom"
+                    [max]="currentDate"
+                    [errorStateMatcher]="dateRangeStateMatcher"
+                  >
+                  <mat-datepicker-toggle matSuffix [for]="pickerFrom"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerFrom></mat-datepicker>
+                  <mat-error>
+                    {{ 'tax.fromDateRequired' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="inps.at(i).get('dateRange')?.get('from')?.hasError('matDatepickerParse')">
+                    {{ 'invalidDate' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="inps.at(i).get('dateRange')?.hasError('dateRange')">
+                    {{ 'invalidRange' | translate }}
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill" style="width: 15%">
+                  <mat-label>{{ 'tax.toDate' | translate }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="to"
+                    [matDatepicker]="pickerTo"
+                    [max]="currentDate"
+                    [errorStateMatcher]="dateRangeStateMatcher"
+                  >
+                  <mat-datepicker-toggle matSuffix [for]="pickerTo"></mat-datepicker-toggle>
+                  <mat-datepicker #pickerTo></mat-datepicker>
+                  <mat-error>
+                    {{ 'tax.toDateRequired' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="inps.at(i).get('dateRange')?.get('to')?.hasError('matDatepickerParse')">
+                    {{ 'invalidDate' | translate }}
+                  </mat-error>
+                  <mat-error *ngIf="inps.at(i).get('dateRange')?.hasError('dateRange')">
+                    {{ 'invalidRange' | translate }}
+                  </mat-error>
+                </mat-form-field>
+
+              </ng-container>
 
               <mat-form-field appearance="fill" style="width: 10%">
                 <mat-label>{{ 'tax.debit' | translate }}</mat-label>
@@ -411,6 +441,7 @@ import {
 
         <!--
         {{ taxForm.value | json }}
+        {{ taxForm.status | json }}
         -->
 
       </div>
@@ -454,6 +485,8 @@ export class TaxComponent implements OnInit, OnDestroy {
 
   @ViewChild('formDirective') fd!: NgForm;
 
+  dateRangeStateMatcher = new DateRangeErrorStateMatcher();
+
   cards$ = this.store.select(selectCards);
   cities$ = this.store.select(selectCities);
   filteredCities$: Observable<string[]> | null = null;
@@ -472,8 +505,8 @@ export class TaxComponent implements OnInit, OnDestroy {
       name: ['', Validators.required],
       birthDate: [null, Validators.required],
       sex: ['', Validators.required],
-      birthDistrict: ['', Validators.required],
-      birthCity: ['', Validators.required],
+      birthDistrict: ['', Validators.required, this.districtValidator.validate()],
+      birthCity: ['', Validators.required, this.cityValidator.validate()],
     }),
     taxAuthorities: this.fb.array([]),
     inps: this.fb.array([])
@@ -522,20 +555,22 @@ export class TaxComponent implements OnInit, OnDestroy {
               private actionListener$: Actions,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
-              private translate: TranslateService) {}
+              private translate: TranslateService,
+              private districtValidator: DistrictValidator,
+              private cityValidator: CityValidator) {}
 
   ngOnInit(): void {
+
     this.store.dispatch(getCards());
     this.store.dispatch(getCities());
-    this.addInsertF24Hook();
 
-    // TODO: fixare filtro reciproco con provincia: ora funziona solo al successivo editing del comune...
+    this.addInsertF24Hook();
 
     this.filteredDistricts$ = this.taxPayer!.get('birthDistrict')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
-      switchMap(filter => this.store.select(selectFilteredDistrict(filter)).pipe(
+      switchMap(filter => this.store.select(selectFilteredDistricts(filter)).pipe(
         tap(items => {
           if (items.length < 4) {
             this.districtViewPortHeight = (items.length * 50);
@@ -545,12 +580,15 @@ export class TaxComponent implements OnInit, OnDestroy {
         })
       ))
     );
+
+    // TODO: fixare filtro reciproco con provincia: ora funzionerebbe solo al successivo valueChanges del comune...
     this.filteredCities$ = this.taxPayer!.get('birthCity')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
-      tap(() => console.log('District: ' + this.taxPayer!.get('birthDistrict')!.value)),
-      switchMap(filter => this.store.select(selectCitiesByDistrict(this.taxPayer!.get('birthDistrict')!.value, filter)).pipe(
+      // tap(() => console.log('District: ' + this.taxPayer!.get('birthDistrict')!.value)),
+      // switchMap(filter => this.store.select(selectCitiesByDistrict(this.taxPayer!.get('birthDistrict')!.value, filter)).pipe(
+      switchMap(filter => this.store.select(selectFilteredCities(filter)).pipe(
         tap(items => {
           if (items.length < 4) {
             this.cityViewPortHeight = (items.length * 50);
@@ -619,8 +657,12 @@ export class TaxComponent implements OnInit, OnDestroy {
       officeCode: ['', Validators.required],
       reason: ['', Validators.required],
       inpsCode: ['', Validators.required],
-      from: [null, Validators.required],
-      to: [null, Validators.required],
+      dateRange: this.fb.group({
+        from: [null, Validators.required],
+        to: [null, Validators.required],
+      }, {
+        validators: [dateRangeValidator('from', 'to')]
+      }),
       debit: [0, Validators.required],
       credit: [0, Validators.required]
     })

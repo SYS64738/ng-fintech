@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
 import {AbstractControl, AsyncValidatorFn, FormGroup, ValidationErrors} from "@angular/forms";
 import {Observable} from "rxjs";
-import {CardService} from "../../api/card.service";
+import {CardService} from "../../../api/card.service";
 import {map} from "rxjs/operators";
 
 @Injectable({

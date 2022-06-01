@@ -8,6 +8,7 @@ import {MaterialModule} from "./material/material.module";
 import {TranslateModule} from "@ngx-translate/core";
 import {LeafletComponent} from "./components/leaflet.component";
 import {EqualFieldsValidator} from "./validators/equal-fields.validator";
+import {DateRangeValidator} from "./validators/date-range.validator";
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import {EqualFieldsValidator} from "./validators/equal-fields.validator";
     CustomCurrencyPipe,
     ConfirmDialogComponent,
     LeafletComponent,
-    EqualFieldsValidator
+    EqualFieldsValidator,
+    DateRangeValidator
   ],
   imports: [
     CommonModule,
@@ -29,7 +31,8 @@ import {EqualFieldsValidator} from "./validators/equal-fields.validator";
     CustomCurrencyPipe,
     ConfirmDialogComponent,
     LeafletComponent,
-    EqualFieldsValidator
+    EqualFieldsValidator,
+    DateRangeValidator
   ]
 })
 export class SharedModule { }

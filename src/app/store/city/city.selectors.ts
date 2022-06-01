@@ -5,6 +5,11 @@ export const {
   selectCities
 } = citiesFeature
 
+export const selectDistricts = () => createSelector(
+  selectCities,
+  (state) => [...new Set(state.map(c => c.provincia.nome))]
+)
+
 export const selectFilteredCities = (name: string) => createSelector(
   selectCities,
   (state) => state
@@ -12,7 +17,7 @@ export const selectFilteredCities = (name: string) => createSelector(
     .filter(c => name ? c.toLowerCase().includes(name.toLowerCase()) : true)
 )
 
-export const selectFilteredDistrict = (name: string) => createSelector(
+export const selectFilteredDistricts = (name: string) => createSelector(
   selectCities,
   (state) => {
     const unique = [...new Set(state.map(c => c.provincia.nome))];
@@ -22,7 +27,6 @@ export const selectFilteredDistrict = (name: string) => createSelector(
   }
 )
 
-// TODO: gestire filtro reciproco provincia-comune...
 export const selectCitiesByDistrict = (district: string, name: string) => createSelector(
   selectCities,
   (state) => state
