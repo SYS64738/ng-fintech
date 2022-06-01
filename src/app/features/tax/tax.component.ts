@@ -173,7 +173,19 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
             </mat-form-field>
           </ng-container>
 
-          <h2>{{ 'tax.taxAuthority' | translate }}</h2>
+          <div class="children-header">
+            <h2>{{ 'tax.taxAuthority' | translate }}</h2>
+            <button
+              style="margin-top: 10px; margin-bottom: 16px"
+              mat-mini-fab
+              color="primary"
+              type="button"
+              matTooltip="{{ 'tax.addTT' | translate }}"
+              (click)="appendAuthority()"
+            >
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
           <div formArrayName="taxAuthorities">
             <div *ngFor="let tac of taxAuthorities.controls; let i = index" [formGroupName]="i" class="item">
 
@@ -258,19 +270,21 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
                 : {{ 'currency' | translate }} {{ totalTaxAuthorityCredit$ | async }}</h3>
             </div>
 
+          </div>
+
+          <div class="children-header">
+            <h2>{{ 'tax.inps' | translate }}</h2>
             <button
               style="margin-top: 10px; margin-bottom: 16px"
               mat-mini-fab
               color="primary"
               type="button"
               matTooltip="{{ 'tax.addTT' | translate }}"
-              (click)="appendAuthority()"
+              (click)="appendInps()"
             >
               <mat-icon>add</mat-icon>
             </button>
           </div>
-
-          <h2>{{ 'tax.inps' | translate }}</h2>
           <div formArrayName="inps">
             <div *ngFor="let ic of inps.controls; let i = index" [formGroupName]="i" class="item">
 
@@ -415,16 +429,6 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
                 : {{ 'currency' | translate }} {{ totalInpsCredit$ | async }}</h3>
             </div>
 
-            <button
-              style="margin-top: 10px; margin-bottom: 16px"
-              mat-mini-fab
-              color="primary"
-              type="button"
-              matTooltip="{{ 'tax.addTT' | translate }}"
-              (click)="appendInps()"
-            >
-              <mat-icon>add</mat-icon>
-            </button>
           </div>
 
           <h3>{{ 'tax.grandTotal' | translate}}: {{ 'currency' | translate }} {{ grandTotal$ | async }}</h3>
@@ -461,6 +465,12 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
       padding-bottom: 10px;
     }
 
+    .children-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
     .item {
       width: 100%;
       display: flex;
@@ -477,6 +487,7 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
 
     .button {
       width: 100%;
+      margin-bottom: 30px;
     }
 
   `]

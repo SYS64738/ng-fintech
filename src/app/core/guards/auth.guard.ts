@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
 import {AuthService} from "../auth.service";
 import {catchError, mapTo, Observable, of, take} from "rxjs";
+import {map} from "rxjs/operators";
 
 @Injectable({
   providedIn: 'root'
@@ -15,23 +16,13 @@ export class AuthGuard implements CanActivate {
 
     return this.authService.fetchUser().pipe(
       take(1),
-      mapTo(true),
+      map(() => true),
       catchError(() => {
         this.router.navigateByUrl('/login');
         return of(false);
       })
     );
 
-    /*
-    if (this.auth.isUserLogged()) {
-      // se loggato, rimuovo lo sfondo dal body...
-      window.document.body.classList.remove('bg-img');
-      return true;
-    } else {
-      this.router.navigateByUrl('login');
-      return false;
-    }
-    */
   }
 
 }
