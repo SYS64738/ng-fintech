@@ -27,10 +27,10 @@ export const selectFilteredDistricts = (name: string) => createSelector(
   }
 )
 
-export const selectCitiesByDistrict = (district: string, name: string) => createSelector(
+export const selectCitiesByDistrict = (district: string | null, name: string) => createSelector(
   selectCities,
   (state) => state
-    .filter(c => district !== '' ? c.provincia.nome === district : true)
+    .filter(c => district !== null ? c.provincia.nome === district : true)
     .map(c => c.nome)
     .filter(c => c.toLowerCase().includes(name.toLowerCase()))
 )

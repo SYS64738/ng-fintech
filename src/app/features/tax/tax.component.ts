@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit, ViewChild} from "@angular/core";
 import {FormArray, FormBuilder, NgForm, Validators} from "@angular/forms";
 import {
+  BehaviorSubject,
   combineLatest,
   debounceTime,
   distinctUntilChanged,
@@ -23,7 +24,7 @@ import {getCards} from "../../store/card/card.actions";
 import {map} from "rxjs/operators";
 import {getCities} from "../../store/city/city.actions";
 import {
-  selectCities,
+  selectCities, selectCitiesByDistrict,
   selectFilteredCities,
   selectFilteredDistricts
 } from "../../store/city/city.selectors";
@@ -121,6 +122,7 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
                 autocomplete="off"
                 placeholder="{{ 'tax.birthDistrict' | translate }}"
                 [matAutocomplete]="autoDistrict"
+                (blur)="selectDistrict()"
               >
               <mat-autocomplete #autoDistrict="matAutocomplete" [displayWith]="displayFn">
                 <cdk-virtual-scroll-viewport
@@ -501,6 +503,7 @@ export class TaxComponent implements OnInit, OnDestroy {
   cards$ = this.store.select(selectCards);
   cities$ = this.store.select(selectCities);
   filteredCities$: Observable<string[]> | null = null;
+  refreshFilteredCities$ = new BehaviorSubject<boolean>(true);
   filteredDistricts$: Observable<string[]> | null = null;
   cityViewPortHeight: number = 200;
   districtViewPortHeight: number = 200;
@@ -517,7 +520,7 @@ export class TaxComponent implements OnInit, OnDestroy {
       birthDate: [null, Validators.required],
       sex: ['', Validators.required],
       birthDistrict: ['', Validators.required, this.districtValidator.validate()],
-      birthCity: ['', Validators.required, this.cityValidator.validate()],
+      birthCity: [{value: '', disabled: true}, Validators.required, this.cityValidator.validate()],
     }),
     taxAuthorities: this.fb.array([]),
     inps: this.fb.array([])
@@ -581,6 +584,7 @@ export class TaxComponent implements OnInit, OnDestroy {
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
+      tap(() => this.taxPayer?.get('birthCity')?.patchValue('')),
       switchMap(filter => this.store.select(selectFilteredDistricts(filter)).pipe(
         tap(items => {
           if (items.length < 4) {
@@ -592,14 +596,12 @@ export class TaxComponent implements OnInit, OnDestroy {
       ))
     );
 
-    // TODO: fixare filtro reciproco con provincia: ora funzionerebbe solo al successivo valueChanges del comune...
-    this.filteredCities$ = this.taxPayer!.get('birthCity')!.valueChanges.pipe(
+    this.filteredCities$ = this.refreshFilteredCities$.pipe(
+      switchMap(() => this.taxPayer!.get('birthCity')!.valueChanges.pipe(
       startWith(''),
       debounceTime(100),
       distinctUntilChanged(),
-      // tap(() => console.log('District: ' + this.taxPayer!.get('birthDistrict')!.value)),
-      // switchMap(filter => this.store.select(selectCitiesByDistrict(this.taxPayer!.get('birthDistrict')!.value, filter)).pipe(
-      switchMap(filter => this.store.select(selectFilteredCities(filter)).pipe(
+      switchMap(filter => this.store.select(selectCitiesByDistrict(this.taxPayer?.get('birthDistrict')?.value, filter)).pipe(
         tap(items => {
           if (items.length < 4) {
             this.cityViewPortHeight = (items.length * 50);
@@ -608,7 +610,7 @@ export class TaxComponent implements OnInit, OnDestroy {
           }
         })
       ))
-    );
+    )));
 
   }
 
@@ -617,6 +619,15 @@ export class TaxComponent implements OnInit, OnDestroy {
   }
 
   displayFn = (value: string) => value;
+
+  selectDistrict() {
+    if (this.taxPayer?.get('birthDistrict')?.value) {
+      this.taxPayer?.get('birthCity')?.enable();
+      this.refreshFilteredCities$.next(true);
+    } else {
+      this.taxPayer?.get('birthCity')?.disable();
+    }
+  }
 
   addInsertF24Hook() {
     this.actionsSubscriptions.add(

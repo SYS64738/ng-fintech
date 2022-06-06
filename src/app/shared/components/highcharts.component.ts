@@ -34,7 +34,13 @@ export class HighchartsComponent implements OnInit, OnChanges {
         enabled: false
       },
       xAxis: {
-        categories: this.categories
+        categories: this.categories,
+        labels: {
+          style: {
+            fontSize: '11px',
+            fontFamily: 'Verdana, sans-serif'
+          }
+        }
       },
       yAxis: {
         title: {
