@@ -9,6 +9,7 @@ import {TranslateModule} from "@ngx-translate/core";
 import {LeafletComponent} from "./components/leaflet.component";
 import {EqualFieldsValidator} from "./validators/equal-fields.validator";
 import {DateRangeValidator} from "./validators/date-range.validator";
+import {HighchartsComponent} from "./components/highcharts.component";
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import {DateRangeValidator} from "./validators/date-range.validator";
     AbbreviatePipe,
     CustomCurrencyPipe,
     ConfirmDialogComponent,
+    HighchartsComponent,
     LeafletComponent,
     EqualFieldsValidator,
     DateRangeValidator
@@ -30,6 +32,7 @@ import {DateRangeValidator} from "./validators/date-range.validator";
     AbbreviatePipe,
     CustomCurrencyPipe,
     ConfirmDialogComponent,
+    HighchartsComponent,
     LeafletComponent,
     EqualFieldsValidator,
     DateRangeValidator
