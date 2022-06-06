@@ -122,7 +122,7 @@ import {DateRangeErrorStateMatcher, dateRangeValidator} from "../../shared/valid
                 autocomplete="off"
                 placeholder="{{ 'tax.birthDistrict' | translate }}"
                 [matAutocomplete]="autoDistrict"
-                (blur)="selectDistrict()"
+                (blur)="districtChanged()"
               >
               <mat-autocomplete #autoDistrict="matAutocomplete" [displayWith]="displayFn">
                 <cdk-virtual-scroll-viewport
@@ -620,7 +620,7 @@ export class TaxComponent implements OnInit, OnDestroy {
 
   displayFn = (value: string) => value;
 
-  selectDistrict() {
+  districtChanged() {
     if (this.taxPayer?.get('birthDistrict')?.value) {
       this.taxPayer?.get('birthCity')?.enable();
       this.refreshFilteredCities$.next(true);
